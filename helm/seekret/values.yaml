@@ -1,0 +1,49 @@
+# Default values for seekret.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+name: seekret-sidecar-injector
+# Injector values
+injector:
+  annotaionNamespace: injector.seekret.com
+  imageName: tumblr/k8s-sidecar-injector:latest
+
+# Minio values
+s3:
+  folderName: pcaps
+  s3_url: http://seekret-minio.seekret:9000/seekret-pcap
+
+# Dumper values
+rotationSeconds: 1800
+bpfFilter: "not tcp port 9000"
+maxFileSize: 100
+
+# Values for minio dependency
+minio:
+  ## Set default accesskey, secretkey
+  ##
+  accessKey: "seekret"
+  secretKey: "seekret123"
+
+  replicas: 2
+
+  persistence:
+    size: "10Gi"
+  ## Create a bucket after minio install
+  ##
+
+  resources:
+    requests:
+      memory: "2Gi"
+
+  s3gateway:
+    enabled: false
+    replicas: 2
+    serviceEndpoint: 
+    accessKey:  
+    secretKey: 
+
+  gcsgateway:
+    enabled: true
+    gcsKeyJson:
+    projectId:

@@ -1,0 +1,183 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ .Values.name }}
+rules:
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get","watch","list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ .Values.name }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.name }}
+    namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: {{ .Values.name }}
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Values.name }}
+  namespace: kube-system
+  labels:
+    kubernetes.io/cluster-service: "true"
+    addonmanager.kubernetes.io/mode: Reconcile
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{printf "%s-prod" .Values.name}}
+  namespace: kube-system
+  labels:
+    app: {{ .Values.name }}
+spec:
+  type: ClusterIP
+  ports:
+  - name: https
+    port: 443
+    targetPort: https
+    protocol: TCP
+  - name: http-metrics
+    port: 80
+    targetPort: http-metrics
+    protocol: TCP
+  selector:
+    app: {{ .Values.name }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}
+  namespace: "kube-system"
+  labels:
+    app: {{ .Values.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}
+    spec:
+      serviceAccountName: {{ .Values.name }}
+      volumes:
+      - name: secrets
+        secret:
+          secretName: {{ .Values.name }}
+      containers:
+      - name: {{ .Values.name }}
+        imagePullPolicy: IfNotPresent
+        image: {{ .Values.injector.imageName }}
+        command: ["entrypoint.sh"]
+        args: []
+        ports:
+        - name: https
+          containerPort: 9443
+        - name: http-metrics
+          containerPort: 9000
+        volumeMounts:
+        - name: secrets
+          mountPath: /var/lib/secrets
+        livenessProbe:
+          httpGet:
+            scheme: HTTPS
+            path: /health
+            port: https
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 3
+        env:
+        - name: "TLS_CERT_FILE"
+          value: "/var/lib/secrets/sidecar-injector.crt"
+        - name: "TLS_KEY_FILE"
+          value: "/var/lib/secrets/sidecar-injector.key"
+        - name: "LOG_LEVEL"
+          value: "2"
+        - name: "CONFIG_DIR"
+          value: "conf/"
+        - name: "CONFIGMAP_LABELS"
+          value: {{printf "app=%s" .Values.name | quote}}
+        - name: "ANNOTATION_NAMESPACE"
+          value: {{ .Values.injector.annotaionNamespace | quote}}
+---
+apiVersion: v1
+data:
+  sidecar-injector.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUZEakNDQXZhZ0F3SUJBZ0lVWHRLTmlwQ1JOWWxlYk9VRnlPZTczbHAzeUpZd0RRWUpLb1pJaHZjTkFRRUwKQlFBd2daRXhDekFKQmdOVkJBWVRBbFZUTVJFd0R3WURWUVFJREFoT1pYY2dXVzl5YXpFV01CUUdBMVVFQnd3TgpUbVYzSUZsdmNtc2dRMmwwZVRFUU1BNEdBMVVFQ2d3SFUyVmxhM0psZERFa01DSUdBMVVFQXd3YmMyVmxhM0psCmRDMXphV1JsWTJGeUxXbHVhbVZqZEc5eUxVTkJNUjh3SFFZSktvWklodmNOQVFrQkZoQnVkV3hzUUhObFpXdHkKWlhRdVkyOXRNQ0FYRFRJd01EY3lPVEEzTURFeU5sb1lEelEzTlRnd05qSTFNRGN3TVRJMldqQmpNUXN3Q1FZRApWUVFHRXdKVlV6RVJNQThHQTFVRUNBd0lUbVYzSUZsdmNtc3hEREFLQmdOVkJBY01BMDVaUXpFUU1BNEdBMVVFCkNnd0hVMlZsYTNKbGRERWhNQjhHQTFVRUF3d1ljMlZsYTNKbGRDMXphV1JsWTJGeUxXbHVhbVZqZEc5eU1JSUIKSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUJDZ0tDQVFFQTE5NnVBMmtkTnd3L0NybUdBMk5UMnl2TgppRE95WVBBUndtYnp1cEVYY0Q5ZTUzT0FNcGdtd1U1YmxZQys4dFZ5RjcwMUpYamczUjBlWEwwdlFBQ0tjbmNrCmRKL0VqRTVNTTJ4Q0xQZVdKNm1qaXhwcyszSStEcTRLenNPS3l2SXpKT04yZE1oSDZoWHNub2grTk9zdGlwWmcKcGJpOGNDdkY1QjlGMm5KTlhVc0M4ZGg4Q3RqUFlKWExmZDI3WHU3TXNhdzBLUzN3V2NTWTFIU1ZRSWd3d2s0SQpyN2hjTzY5ZHE4MHhNeUVMMU9kTTB2Z3kweERxYXc3QWhHWnpIZmhQZkc5TWtRSythK1REM1U5Vi92cUNZNXZWCldKdlN5dnlaM0JxdklxU3VncTk3bUZNRUN6S2xVejlkQkkzaXBPRU1EQ1pZUkhGam15aktyd25PSjBXNC9RSUQKQVFBQm80R0lNSUdGTUlHQ0JnTlZIUkVFZXpCNWdoMXpaV1ZyY21WMExYTnBaR1ZqWVhJdGFXNXFaV04wYjNJdApjSEp2WklJcGMyVmxhM0psZEMxemFXUmxZMkZ5TFdsdWFtVmpkRzl5TFhCeWIyUXVhM1ZpWlMxemVYTjBaVzJDCkxYTmxaV3R5WlhRdGMybGtaV05oY2kxcGJtcGxZM1J2Y2kxd2NtOWtMbXQxWW1VdGMzbHpkR1Z0TG5OMll6QU4KQmdrcWhraUc5dzBCQVFzRkFBT0NBZ0VBSXY0YWd4SVlHbytSem1Va2grTksya0xZWndiWVExTU5xK1VqZktuYgp2N1ZTZEhNdEMzWStHNHMvdHdjUzdGUDlEaCtBcEY3TDRTc3JvTkZyNmc1eUpieEJCOWtRaCs1cUJERlVmb1R0ClJHUVpGTFN2MW9DaEtCYnZRU2VOeWRFbVNYNENrcVEvUTZmSko3VWQ2Ykdyd2dGL0RQbmJrZnZkdGpWd0NGcmsKMWhlTUtrQ1hSWlRHWUUvWnIxUGQ3SkRXclA3THBVZitPcU9iekZsT3daVXBpbHE5eFQ0aFN5Y1Q1TkVCclZhNQp3OFBWaDhTUldxdGh4Nm1KNVltTEVVTk9SaW12ZHdndzZwU0poeCs3RGFxenM5d1U2VlFVbUJxOTN4aHNDMXBLCkh3NDgwNm5pbzJ5bDMrTWNJeFJtbDh4VllEQlFQcGI1K2VPWU9PdWdrVVd2THNneUtOYUFUcGFaYkdxSC81UGoKRzYxUGQ2a1hROFk2OGF6UlFZYjRoZG05TzNrL25RU2lEN0NQdlp6Q1VkWHk3MXZyTG1EbDZ0VlNrMDRZS0JLego1SUYrTjUzNlVOTTZjUWVobHA2RG9yZDA1djJVZ1g5bHJUZVJUdDV4WnEvMXgvZExYdkhzNmRRVVFoYS9ESi9DCkc3N0MxL3V2dFZlR0o0cU9pdjBvMjZ4SnhmWUd2bWJOaVcxSkFuNVFDcCtDZXZseFNnTmNVLytML3NyMHFWNWgKWkdxWHZvOU5XUUhHVkVlL0k1dUpDZnBzbWdCUEhIeCtmUUFpeUlMU0R6VjRpWEdKdXVDRWt3aEdBVmxNbFFKdAozOUlaeENGb1hnVjdhNWJyT2tWb3lSL2xMNXhWaG94emltMzJoVGtEb1FaRklTa2ZzTm9sbEZUdEdLa0hjQmRCCklqYz0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+  sidecar-injector.key: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFb3dJQkFBS0NBUUVBMTk2dUEya2ROd3cvQ3JtR0EyTlQyeXZOaURPeVlQQVJ3bWJ6dXBFWGNEOWU1M09BCk1wZ213VTVibFlDKzh0VnlGNzAxSlhqZzNSMGVYTDB2UUFDS2NuY2tkSi9FakU1TU0yeENMUGVXSjZtaml4cHMKKzNJK0RxNEt6c09LeXZJekpPTjJkTWhINmhYc25vaCtOT3N0aXBaZ3BiaThjQ3ZGNUI5RjJuSk5YVXNDOGRoOApDdGpQWUpYTGZkMjdYdTdNc2F3MEtTM3dXY1NZMUhTVlFJZ3d3azRJcjdoY082OWRxODB4TXlFTDFPZE0wdmd5CjB4RHFhdzdBaEdaekhmaFBmRzlNa1FLK2ErVEQzVTlWL3ZxQ1k1dlZXSnZTeXZ5WjNCcXZJcVN1Z3E5N21GTUUKQ3pLbFV6OWRCSTNpcE9FTURDWllSSEZqbXlqS3J3bk9KMFc0L1FJREFRQUJBb0lCQVFDNVhtSEZVZjBoYVNXMQpldXlHZWtQbS8rMUZtVWNERVFQZkVQTVljVUZVUlVha3I3MFZOU3lLY0ZRYXhHeTBML0FDVEpxWHEvNUVRWjN4Cit3N1pBZDNoUDBnUjBhUkE2M2RwN1B2Q2kzVG9hRGFrMjdOY0ZKVVBuQXB4MU42Wk9YUUxxRHZ2T3BEdWhaY2oKNTRlZ3Y1YmkzQkR3SGZ2S3d2dnkwWnYxWXBQbW1FL2ZuMWFheHF3azdaZnVOM2VsVXBPZk52NVdIYTJqc0ROUwozS0lNVTJ5eHE4RCsrWW55MGVaOXlDSTl6RWJoNHB6K3Y2WXMxbldGT3N2WWIwTFF1OGoyamdZRlZBRkpwT3V2ClcyRFBraTRWZXB6OXdaeUYzYzVuQVBIdGFKbVNrWC9zcTkzOWtQOTRLV0hJYnBnRTNRa0N2UUhYbzNBVkZNY1cKNlp4MU5PaGhBb0dCQVBtZUE3eUR1K3U5c3NtbWNaVW9RU2lxRzJZbU83OVVRaVRxUHZXTSs5aGZRWWNNNzYwKwowK3luZUl4SERiRjMwMnBpNWt5Vy9HNGp5UHNld1BscEg0c3JqdFRUUlEzS3FpODdZVC9HWnlhR2lHczc3TkptCk1aSDVKOCt5SlQ5VG5pV0piZ1YzVGJOUG1ZbkhZM3pwRk55bTlwN08wZnVzdEYyVXVuNGpsYzM1QW9HQkFOMWoKd1lGU0dBV3YwemthVElvV0ZHUmxRdnZWRlcyNGdyZHhoSHdGRHUwN1lDaDdrSy9Fdk4zZzlic1NPc29CMW11QwpTMmNYQnEvYkJscW84NnVic3BJbUdCOEtQOUJVRFArME5ST2NNbm96c1g4bldSeXB3eTdFWG9jdDluaUNKaVV3Ck1ycGgvUE1zYW5tOVYvVVljeTFGbmVXWEdOS2JJeVAvbE9qU281UWxBb0dBUERpT0NEWHo2VnpidkdDR2VJaTgKcDVYYWhGdG5BTExRUGwyeEVNYVJuOUxqV1RTYXdqNHRIS1FPcGpFaU1aV0tFTm1KWENMMUJaRm1sSWNINFdRbQpNd293TEZKSUQ1cThVaWJPUUhlYVBTWXAxVTBneG1YWFFiTk5rb01WRDJFWi8wNVhsOFAvbitudFRkc251bVAxCkg0SzhidlhRblJvK2JYRkxTTkZHKytrQ2dZQjlYVHE3TnppQkorSk5DSlprNzBIVzQveDlURmxaQzAyQ0FWY0wKUDNZSFlrTCtTWkpSNWU4cEdYVXMzSkxMeHlTYk5tbnFVNENtM2prSDUzb3NKL3VEaE96Tnp1ajUyRTZRRVlTbwp1UjlnVVp0bUxHcnFyenJtWmE0OWtBcHNqUTU2cW9OZlJaT09SQTE3S0h3QlB6b2hYYldleCtQM2huL3NwNUswCkVHc3V2UUtCZ0hyYVBWSVQ0cVhiQkp3bHYrWjhpd3JNNFVKcU9td3dmQXNCNHVQKy96T1lWVWtWclQyVzhKclgKNENtTXZvbDVPbExBbnYxK0NSSi9QNTNudjlxOC8zaUtwem80WEIwMSt0U2hTQ1Q2aUlZaDE3Mk9JbkFxYit6SQpuMnpJUTZQU1JuWWcvZHBYVjNXUFl3NW1laDVrQm9YTUE1QlJuc1ZFUitiRFNXWng5MFRCCi0tLS0tRU5EIFJTQSBQUklWQVRFIEtFWS0tLS0tCg==
+kind: Secret
+metadata:
+  name: {{ .Values.name }}
+  namespace: kube-system
+type: Opaque
+---
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: {{printf "%s-webhook" .Values.name}}
+  labels:
+    app: {{ .Values.name }}
+webhooks:
+- name: {{ .Values.injector.annotaionNamespace }}
+  failurePolicy: "Ignore" # we fail "open" if the webhook is down hard
+  rules:
+  - operations: [ "CREATE" ]
+    apiGroups: [""]
+    apiVersions: ["v1"]
+    resources: ["pods"]
+  clientConfig:
+    service:
+      name: {{printf "%s-prod" .Values.name}}
+      namespace: kube-system
+      path: "/mutate"   # what /url/slug to send requests at
+    caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUZyVENDQTVVQ0ZHV2R5Mmd3WnJPdjRNRWxtWUdpUU1HSWIwNEZNQTBHQ1NxR1NJYjNEUUVCQ3dVQU1JR1IKTVFzd0NRWURWUVFHRXdKVlV6RVJNQThHQTFVRUNBd0lUbVYzSUZsdmNtc3hGakFVQmdOVkJBY01EVTVsZHlCWgpiM0pySUVOcGRIa3hFREFPQmdOVkJBb01CMU5sWld0eVpYUXhKREFpQmdOVkJBTU1HM05sWld0eVpYUXRjMmxrClpXTmhjaTFwYm1wbFkzUnZjaTFEUVRFZk1CMEdDU3FHU0liM0RRRUpBUllRYm5Wc2JFQnpaV1ZyY21WMExtTnYKYlRBZ0Z3MHlNREEzTWprd056QXhNakZhR0E4ME56VTRNRFl5TlRBM01ERXlNVm93Z1pFeEN6QUpCZ05WQkFZVApBbFZUTVJFd0R3WURWUVFJREFoT1pYY2dXVzl5YXpFV01CUUdBMVVFQnd3TlRtVjNJRmx2Y21zZ1EybDBlVEVRCk1BNEdBMVVFQ2d3SFUyVmxhM0psZERFa01DSUdBMVVFQXd3YmMyVmxhM0psZEMxemFXUmxZMkZ5TFdsdWFtVmoKZEc5eUxVTkJNUjh3SFFZSktvWklodmNOQVFrQkZoQnVkV3hzUUhObFpXdHlaWFF1WTI5dE1JSUNJakFOQmdrcQpoa2lHOXcwQkFRRUZBQU9DQWc4QU1JSUNDZ0tDQWdFQXVzd3NZc1pDUkd1QUIzdDV0NGFnVHE0MFNDSE1oWm9MCkZFdGFncU9RZHErLzM5MmN1N0REaDc0bHZPcnF2Y2ZGZlppVDRaMTRqNm84c2FzMTBOaU5OS0xxK0N0MGtFQlUKaEp0eERib2tJVXJSNTd6OVlnVmxzbmZzR2lwOEZaL28rbHU1L0QwSVU5N2xpcjlVOGMrWisvRDdGVVhmMk4vWQpJekpYSWFIZ25LUzBRMUJ2MEZLYjB6L0puekVwUHZXMmtrNjhGQ1kweGFlMTY2TkppVFZTUXRPeDRhaHVxZzRnCngyclRFamN4NmJQbVE0dEJ6elU5Tis0dGlnYUhOQXpkckdyZ01QaU1BY1RjOEJaRVQ4WXRGSi8xekxjTzFadnMKTWNKNGNRZ1d1clVvODR0YURlMmtwcThkQWM4MFBJOG9Ddm5Ua2tqckNNZk5pUWtHT2JXdXU5TmxFcEJuSkkrVAo4YUMydlMrNm04WGdrSlcwQjRpRkJ2MXB5NHBidUxsTDFkZGxOTFVGSll1ckh6N2R4RGExeXdzZVdkSGl2Y1F5Ck1TVjg1QTBxNHVrTGVUSWZ2dkVVR1JCdjZCU3QycFQyUFBiK1dtT1JCRnUyNlJFMnF4cnNManJmN0pSRXFTYnUKdFVWYXZDbnhUd3RNQ3MxcnJMRjh2L1I0VFlqcWZnSkd0a1JhU1hSQzlROTMydWpPckZFckU2K09DeWVYbFY2dgpsaDNEQ0JEVG9EU2hmRU9OZ3hjc3R0ME52bHQ3UkxUUkJJVCtqUnAyZjM0d2xEcHQ2YWZ0STUvNVE4NkU0dWFIClNOS2h6ZmNNVTduNU1lNzhsdzloaUVydVN4ZnRoMGNxTGJGK3MvVXdyV0dGR2NuVjBKUDA3NWs4UTdmYW90aUoKYkd4ZUdRMlR2UjBDQXdFQUFUQU5CZ2txaGtpRzl3MEJBUXNGQUFPQ0FnRUFRNGFmdEJHQ0EzbU9GcGpNcTJUUAptSjlJVXZmM0VUeVF4a08wSy9wMHZENGRTbW1XRzNNNVp6SU1TTnduenR3UDU4bGRVNkh2MWNiOVduR0dlN3JMCjZBRzlBUCtpSW1PWjRTMUdJSXVTUjJJVThYK1BmS1pYcUJXbWRLWDVQK3NKcDFMNVlCc2pYK245ZGZuNVZEREoKdE5pbTgwN2Z6eXlZNm1pM05ZN1FQVXBMUTFFVVNrM3dHK2JVL3VnbWIyQnFMakFBNDFIWkxEaC9kZ1hTQlAzSwoyN1lZT0wyOE45ZGJCVFJDUytNV3lFODFBdmN4OXA0YTl6KzIvNEptRUFkK1NQREttbUhJOUJTZEdMdHV3eHZtCmZRT2hoV3drSnRFbUpGaGsycHZJbVlUQjhUS2x3K3F5UW9hQW0xVUdGMWxRTWo5SmpZNFJUMEo3RmsxSHgrdDEKeHhrOFdnYjB5YUFlMGJGMGQxTnBNRGdpcFgra1VYV2NvRStpelkwZlZTaGhVaU9FSFB4ejl5ZStMUnhlc0NmawpJWkthbHkwN21zbWo2cWp6dVNNQUlIdzBiT2V3bzg2alA1RHJJTGFBZVhrM0NYU2l5UUR2c1JVVmhvZmdOVzcvCnFWeElDQmFHR014ejFxYksxOUM5NmVPbWVlbFUrT0ZGaVNrMU5IeVFGV3liNTBsLzRkVmdsZEZQTXVkNFE4MlkKcCtQc0J5Tk1SZVZFQ2tRUXhFa2t6Q2J6bGwraTNQdVgwMlFueldiNHpVVytZNWVXUDZ0NXE5VjFkUjFBMUJ1MgpaVGdyclErTmRHeldXcnJUT1BkME12U1ZGQmJwVDhLemIzdDkrM0dLOEhvM0ZBNndNaTdBazZrTlNPME94UkQyCll2YlJXRDhGTUhKeHV4dDhFdyswcmxVPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: seekret-injector
+  namespace: kube-system
+  labels:
+    app: {{ .Values.name }}
+data:
+  sniffer: |
+    name: sniffer
+    containers:
+    - name: sniffer
+      env:
+      - name: POD_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: metadata.name
+      - name: "ROTATION_SECONDS"
+        value: {{ .Values.rotationSeconds }}
+      - name: "S3_URL"
+        value: {{ .Values.s3.s3_url | quote }}
+      - name: "BUCKET_NAME"
+        value: {{ .Values.s3.folderName }}
+      - name: "MAX_FILE_SIZE"
+        value: {{ .Values.maxFileSize }}
+      - name: "BPF_FILTER"
+        value: {{ .Values.bpfFilter | quote}}
+      image: seekret/sniffer:1.0
+      imagePullPolicy: Always
+      securityContext:
+          capabilities:
+            add:
+              - NET_ADMIN
+          privileged: true
+          runAsUser: 0
