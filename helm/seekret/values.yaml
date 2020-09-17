@@ -10,8 +10,9 @@ injector:
 
 # Minio values
 s3:
+  bucketName: seekret
   folderName: pcaps
-  s3_url: http://seekret-minio.seekret:9000/seekret-pcap
+  s3_url: http://seekret-minio.seekret:9000
 
 # Dumper values
 rotationSeconds: 1800

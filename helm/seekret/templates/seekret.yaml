@@ -158,22 +158,24 @@ data:
     containers:
     - name: sniffer
       env:
-      - name: POD_NAME
+      - name: PREFIX
         valueFrom:
           fieldRef:
             apiVersion: v1
             fieldPath: metadata.name
-      - name: "ROTATION_SECONDS"
-        value: {{ .Values.rotationSeconds }}
-      - name: "S3_URL"
+      - name: S3_URL
         value: {{ .Values.s3.s3_url | quote }}
-      - name: "BUCKET_NAME"
+      - name: BUCKET_NAME
+        value: {{ .Values.s3.bucketName }}
+      - name: FOLDER_NAME
         value: {{ .Values.s3.folderName }}
-      - name: "MAX_FILE_SIZE"
-        value: {{ .Values.maxFileSize }}
-      - name: "BPF_FILTER"
+      - name: ROTATION_SECONDS
+        value: {{ .Values.rotationSeconds }}
+      - name: BPF_FILTER
         value: {{ .Values.bpfFilter | quote}}
-      image: seekret/sniffer:1.0
+      - name: MAX_FILE_SIZE
+        value: {{ .Values.maxFileSize }}
+      image: seekret/sniffer:1.2
       imagePullPolicy: Always
       securityContext:
           capabilities:
