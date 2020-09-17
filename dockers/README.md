@@ -27,12 +27,13 @@ _Bucket access parameters: (**or** use an IAM role **instead**)_
 - BPF_FILTER            - port number you want to sniff
 
 ## Run
-###docker option
 
+### docker option
 _use target container's network that you want to sniff on_
+
 Run : `docker run seekret/sniffer:1.2 --rm --net container:<container_name> --env-file ./conf.env  --log-driver json-file --log-opt max-size=10m --log-opt max-file=5 -d` 
 
-###docker compose option
+### docker compose option
 Run : `docker-compose --env-file ./conf.env up -d`
 
 ### side-by-side docker-compose option
