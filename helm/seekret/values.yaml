@@ -11,7 +11,7 @@ injector:
 # Minio values
 s3:
   bucketName: seekret
-  folderName: pcaps
+  folderName: pcaps/
   s3_url: http://seekret-minio.seekret:9000
 
 # Dumper values
@@ -40,11 +40,34 @@ minio:
   s3gateway:
     enabled: false
     replicas: 2
-    serviceEndpoint: 
-    accessKey:  
-    secretKey: 
+    serviceEndpoint:
+    accessKey:
+    secretKey:
 
   gcsgateway:
     enabled: true
     gcsKeyJson:
     projectId:
+
+httpProxyClient:
+  enabled: false
+  image: seekret/http-proxy-client:1
+  target:
+  pullIntervalInSeconds: 10
+  gcs:
+    projectName:
+    bucketName:
+    credsFile: "/seekret/gcscreds.json"
+
+gcsCredentials:
+  name: seekret-gcscreds
+  creds:
+
+tlsProxy:
+  enabled: false
+  certsSecretName: seekret-tls-proxy-certs
+  adminPort: 9901
+  targetAddress: localhost
+  targetPort: 443
+  envoyImage: seekret/envoy-https-proxy:1
+  initImage: seekret/https-proxy-init:1

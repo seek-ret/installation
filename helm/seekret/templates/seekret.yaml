@@ -155,6 +155,20 @@ metadata:
 data:
   sniffer: |
     name: sniffer
+    {{ if .Values.tlsProxy.enabled }}
+    volumes:
+    - name: certs
+      secret:
+        secretName: {{ .Values.tlsProxy.certsSecretName | quote }}
+    initContainers:
+    - name: init-net
+      image: {{ .Values.tlsProxy.initImage }}
+      securityContext:
+        capabilities:
+          add:
+          - NET_ADMIN
+        privileged: true
+    {{ end }}
     containers:
     - name: sniffer
       env:
@@ -175,6 +189,10 @@ data:
         value: {{ .Values.bpfFilter | quote}}
       - name: MAX_FILE_SIZE
         value: {{ .Values.maxFileSize }}
+      - name: ACCESS_KEY
+        value: {{ .Values.minio.accessKey | quote}}
+      - name: SECRET_ACCESS_KEY
+        value: {{ .Values.minio.secretKey | quote }}
       image: seekret/sniffer:1.2
       imagePullPolicy: Always
       securityContext:
@@ -183,3 +201,27 @@ data:
               - NET_ADMIN
           privileged: true
           runAsUser: 0
+    {{ if .Values.tlsProxy.enabled }}
+    - name: envoy-tls-proxy
+      image: {{ .Values.tlsProxy.envoyImage }}
+      imagePullPolicy: Always
+      env:
+      - name: ENVOY_ADMIN_PORT
+        value: {{ .Values.tlsProxy.adminPort }}
+      - name: ENVOY_TARGET_ADDRESS
+        value: {{ .Values.tlsProxy.targetAddress }}
+      - name: ENVOY_TARGET_PORT
+        value: {{ .Values.tlsProxy.targetPort }}
+      ports:
+      - containerPort: 9443
+      - containerPort: 9080
+      volumeMounts:
+      - name: certs
+        mountPath: /etc/envoy/cert.pem
+        subPath: cert
+        readOnly: true
+      - name: certs
+        mountPath: /etc/envoy/key.pem
+        subPath: key
+        readOnly: true
+    {{ end }}
