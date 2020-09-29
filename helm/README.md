@@ -2,7 +2,7 @@ seekret
 =======
 A Helm chart for Kubernetes
 
-Current chart version is `0.1.0`
+Current chart version is `0.2.0`
 
 ## Installation
 
@@ -48,3 +48,19 @@ injector.seekret.com/request: sniffer
 | minio.s3gateway.replicas | int | `2` | Number of replicas for gateway |
 | minio.s3gateway.secretKey | string | `""` | Secret key for remote AWS s3  |
 | minio.s3gateway.serviceEndpoint | string | `""` | Remote endpoint for AWS s3 gateway |
+| httpProxyClient.enabled | bool | `false` | Whether to deploy Seekret's HTTP Proxy |
+| httpProxyClient.image | string | `"seekret/http-proxy-client:latest"` | Docker image of the HTTP Proxy client |
+| httpProxyClient.target | string | `nil` | Target URL for the proxy. The value must include a schema ("http://") |
+| httpProxyClient.pullIntervalInSeconds | float | `10` | Seconds between each requests batch |
+| httpProxyClient.gcs.projectName | string | `nil` | Name of the GCP project where the requests are stored |
+| httpProxyClient.gcs.bucketName | string | `nil` | Name of the GCS bucket where the requests are stored |
+| httpProxyClient.credsFile | string | `"/seekret/gcscreds.json"` | Path in which to store the GCS credentials file |
+| gcsCredentials.name | string | `"seekret-gcscreds"` | Name of the secret with the GCS credentials |
+| gcsCredentials.creds | string | `nil` | The content of the GCS credentials file |
+| tlsProxy.enabled | bool | `false` | Whether the TLS proxy is enabled on the target pod |
+| tlsProxy.adminPort | int | `9901` | The port for Envoy's admin interface |
+| tlsProxy.certsSecretName | string | `"seekret-tls-proxy-certs"` | Name of the secret value with the certificates |
+| tlsProxy.envoyImage | string | `"seekret/envoy-https-proxy:1"` | Image to use for the envoy pod |
+| tlsProxy.initImage | string | `"seekret/https-proxy-init:1"` | Image to use for the init container |
+| tlsProxy.targetAddress | string | `"localhost"` | Target address of the TLS proxy |
+| tlsProxy.targetPort | int | `443` | Target port of the TLS proxy |
