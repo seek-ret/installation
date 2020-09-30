@@ -4,10 +4,7 @@ Docker deployment
 
 ## Requirements
 
- - S3 bucket - in order to store the pcaps
- 	Need to create S3 bucket in AWS for the same VPC
- - Access and secret key to the environment 
- 	Need to insert keys from the environment the docker compose is running on.
+ - Access to Storage Bucket 
 
 ## Installation
 
@@ -31,7 +28,7 @@ _Bucket access parameters: (**or** use an IAM role **instead**)_
 
 _use target container's network that you want to sniff on_
 
-Run : `docker run seekret/sniffer:1.2 --rm --net container:<container_name> --env-file ./conf.env  --log-driver json-file --log-opt max-size=10m --log-opt max-file=5 -d` 
+Run : `docker run -d --rm --net container:<container_name> --env-file ./conf.env  --log-driver json-file --log-opt max-size=10m --log-opt max-file=5 seekret/sniffer:1` 
 
 ### docker compose option
 Run : `docker-compose --env-file ./conf.env up -d`
