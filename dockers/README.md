@@ -28,7 +28,7 @@ _Bucket access parameters: (**or** use an IAM role **instead**)_
 
 _use target container's network that you want to sniff on_
 
-Run : `docker run -d --rm --net container:<container_name> --env-file ./conf.env  --log-driver json-file --log-opt max-size=10m --log-opt max-file=5 seekret/sniffer:1` 
+Run : `docker run -d --rm --net container:<container_name> --env-file ./conf.env  --log-driver json-file --log-opt max-size=10m --log-opt max-file=5 seekret/sniffer:1.3` 
 
 ### docker compose option
 Run : `docker-compose --env-file ./conf.env up -d`
