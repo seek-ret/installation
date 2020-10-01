@@ -34,7 +34,7 @@ injector.seekret.com/request: sniffer
 | maxFileSize | int | `100` | Maximum pcap file size in MBs |
 | rotationSeconds | int | `1800` | Number of seconds between file rotations |
 | bpfFilter | string | `"not tcp port 9000"` | The filter for the injected pod |
-| s3.folderName | string | `"seekret-pcaps"` | Folder for dumps inside bucket |
+| s3.folderName | string | `"pcaps"` | Folder for dumps inside bucket |
 | minio.replicas| int | `2` | Number of minio replicas |
 | minio.accessKey | string | `"seekret"` | Access key for minio |
 | minio.secretKey | string | `"seekret123"` | Sekret key for minio |
