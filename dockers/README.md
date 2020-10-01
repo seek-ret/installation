@@ -19,7 +19,7 @@ _Bucket access parameters: (**or** use an IAM role **instead**)_
 - AWS_SECRET_KEY        - secret key as AWS generated
 
 - BUCKET_NAME           - customer_name
-- FOLDER_NAME           - pcaps/container_name/
+- FOLDER_NAME           - pcaps/container_name
 - PREFIX                - relevant only for K8s deployment
 - BPF_FILTER            - port number you want to sniff
 
