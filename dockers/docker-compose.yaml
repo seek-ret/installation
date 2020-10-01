@@ -25,7 +25,7 @@ services:
 
   sniffer:
     network_mode: host
-    image: seekret/sniffer:1.3
+    image: seekret/sniffer:1
     logging:
       driver: "json-file"
       options:
