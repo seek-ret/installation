@@ -24,15 +24,9 @@ _Bucket access parameters: (**or** use an IAM role **instead**)_
 - BPF_FILTER            - port number you want to sniff
 
 ## Run
-### docker option
 
-_use target container's network that you want to sniff on_
-
-Run : `docker run -d --rm --net container:<container_name> --env-file ./conf.env  --log-driver json-file --log-opt max-size=10m --log-opt max-file=5 seekret/sniffer:1` 
-
-### docker compose option
 Run : `docker-compose --env-file ./conf.env up -d`
 
 ### side-by-side docker-compose option
 If docker compose yaml already exists, run the command:
-`docker-compose -f docker-compose-customer.yml -f docker-compose-seekret.yml run backup_db`
+`docker-compose -f docker-compose-customer.yml -f docker-compose-seekret.yml up -d
