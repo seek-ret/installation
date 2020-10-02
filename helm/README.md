@@ -14,7 +14,7 @@ Install this chart using:
  helm install seekret --namespace seekret --create-namespace .
 ```
 
-The command deploys MinIO on the Kubernetes cluster in the default configuration. The [configuration](#configuration) section lists the parameters that can be configured during installation.
+The command deploys MinIO on the Kubernetes cluster in the default configuration. The [configuration](#Chart Values) section lists the parameters that can be configured during installation.
 To enable the sniffer on a deployment, add the following annotation:
 injector.seekret.com/request: sniffer
 
@@ -49,7 +49,7 @@ injector.seekret.com/request: sniffer
 | minio.s3gateway.secretKey | string | `""` | Secret key for remote AWS s3  |
 | minio.s3gateway.serviceEndpoint | string | `""` | Remote endpoint for AWS s3 gateway |
 | httpProxyClient.enabled | bool | `false` | Whether to deploy Seekret's HTTP Proxy |
-| httpProxyClient.image | string | `"seekret/http-proxy-client:latest"` | Docker image of the HTTP Proxy client |
+| httpProxyClient.image | string | `"seekret/http-proxy-client:1"` | Docker image of the HTTP Proxy client |
 | httpProxyClient.target | string | `nil` | Target URL for the proxy. The value must include a schema ("http://") |
 | httpProxyClient.pullIntervalInSeconds | float | `10` | Seconds between each requests batch |
 | httpProxyClient.gcs.projectName | string | `nil` | Name of the GCP project where the requests are stored |
