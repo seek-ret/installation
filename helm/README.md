@@ -64,3 +64,9 @@ injector.seekret.com/request: sniffer
 | tlsProxy.initImage | string | `"seekret/https-proxy-init:1"` | Image to use for the init container |
 | tlsProxy.targetAddress | string | `"localhost"` | Target address of the TLS proxy |
 | tlsProxy.targetPort | int | `443` | Target port of the TLS proxy |
+
+# License
+
+[Apache 2.0](/helm/LICENSE.txt)
+
+Copyright 2019, Tumblr, Inc.
