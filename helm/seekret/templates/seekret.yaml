@@ -172,27 +172,32 @@ data:
     containers:
     - name: sniffer
       env:
-      - name: PREFIX
-        valueFrom:
-          fieldRef:
-            apiVersion: v1
-            fieldPath: metadata.name
       - name: S3_URL
         value: {{ .Values.s3.s3_url | quote }}
       - name: BUCKET_NAME
         value: {{ .Values.s3.bucketName }}
       - name: FOLDER_NAME
         value: {{ .Values.s3.folderName }}
+      - name: ACCESS_KEY
+        value: {{ .Values.s3.accessKey | quote}}
+      - name: SECRET_ACCESS_KEY
+        value: {{ .Values.s3.secretKey | quote }}
+      - name: REGION
+        value: {{ .Values.s3.region | quote }}
+      - name: PREFIX
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: metadata.name
       - name: ROTATION_SECONDS
         value: {{ .Values.rotationSeconds }}
       - name: BPF_FILTER
         value: {{ .Values.bpfFilter | quote}}
       - name: MAX_FILE_SIZE
         value: {{ .Values.maxFileSize }}
-      - name: ACCESS_KEY
-        value: {{ .Values.minio.accessKey | quote}}
-      - name: SECRET_ACCESS_KEY
-        value: {{ .Values.minio.secretKey | quote }}
+      - name: MAX_FILES
+        value: {{ .Values.maxFiles }}
+
       image: seekret/sniffer:1
       imagePullPolicy: Always
       securityContext:

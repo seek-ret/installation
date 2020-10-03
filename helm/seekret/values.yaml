@@ -8,46 +8,24 @@ injector:
   annotaionNamespace: injector.seekret.com
   imageName: tumblr/k8s-sidecar-injector:latest
 
-# Minio values
+# Sniffer values
 s3:
   bucketName: seekret
   folderName: pcaps
-  s3_url: http://seekret-minio.seekret:9000
+  ## Default url to communicate with GCS buckets
+  s3_url: https://storage.googleapis.com
+  ## Set default accesskey, secretkey
+  accessKey: "seekret"
+  secretKey: "seekret123"
+  ##default region for buckets
+  region: "us-central1"
 
-# Dumper values
+
 rotationSeconds: 1800
 bpfFilter: "not tcp port 9000"
 maxFileSize: 100
+maxFiles: 1
 
-# Values for minio dependency
-minio:
-  ## Set default accesskey, secretkey
-  ##
-  accessKey: "seekret"
-  secretKey: "seekret123"
-
-  replicas: 2
-
-  persistence:
-    size: "10Gi"
-  ## Create a bucket after minio install
-  ##
-
-  resources:
-    requests:
-      memory: "2Gi"
-
-  s3gateway:
-    enabled: false
-    replicas: 2
-    serviceEndpoint:
-    accessKey:
-    secretKey:
-
-  gcsgateway:
-    enabled: true
-    gcsKeyJson:
-    projectId:
 
 httpProxyClient:
   enabled: false
