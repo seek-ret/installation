@@ -16,7 +16,7 @@ s3:
   s3URL: https://storage.googleapis.com
   ## Use HMAC key auth instead of role based
   keyAuth: true
-  ## Set default accessKey, secretKey
+  ## Set accessKey, secretKey
   accessKey:
   secretKey:
   ##default region for buckets

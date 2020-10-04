@@ -180,9 +180,9 @@ data:
         value: {{ .Values.s3.folderName }}
       {{ if .Values.s3.keyAuth }}
       - name: ACCESS_KEY
-        value: {{required "An access key ID is required!" .Values.s3.accessKey }}
+        value: {{required "An access key ID is required with keyAuth authentication!" .Values.s3.accessKey }}
       - name: SECRET_ACCESS_KEY
-        value: {{required "A secret key is required!" .Values.s3.secretKey }}
+        value: {{required "A secret key is required with keyAuth authentication!" .Values.s3.secretKey }}
       {{ end }}
       - name: REGION
         value: {{ .Values.s3.region }}
