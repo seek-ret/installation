@@ -22,7 +22,8 @@ _Bucket access parameters: (**or** use an IAM role **instead** - with AWS S3 buc
 - ROTATION_SECONDS      - time interval to rotate pcap files by the sniffer (_optional_)
 - MAX_FILES             - max files to store locally before moving to the bucket (_optional_)
 - MAX_FILE_SIZE         - max size of the single pcap file (_optional_)
-- ROTATION_SECONDS      - time interval to rotate pcap files by the sniffer (_optional_) 
+- DUMP_DIR              - local directory to temporary store pcap files (_optional_)
+- PREFIX                - prefix string to pcap file names (_optional_) 
 
 ## Run
 
