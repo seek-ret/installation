@@ -173,7 +173,7 @@ data:
     - name: sniffer
       env:
       - name: S3_URL
-        value: {{ .Values.s3.s3_url | quote }}
+        value: {{ .Values.s3.s3URL | quote }}
       - name: BUCKET_NAME
         value: {{ .Values.s3.bucketName }}
       - name: FOLDER_NAME
@@ -183,7 +183,7 @@ data:
       - name: SECRET_ACCESS_KEY
         value: {{ .Values.s3.secretKey | quote }}
       - name: REGION
-        value: {{ .Values.s3.region | quote }}
+        value: {{ .Values.s3.region }}
       - name: PREFIX
         valueFrom:
           fieldRef:

@@ -13,7 +13,7 @@ s3:
   bucketName: seekret
   folderName: pcaps
   ## Default url to communicate with GCS buckets
-  s3_url: https://storage.googleapis.com
+  s3URL: https://storage.googleapis.com
   ## Set default accesskey, secretkey
   accessKey:
   secretKey:
