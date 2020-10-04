@@ -175,13 +175,15 @@ data:
       - name: S3_URL
         value: {{ .Values.s3.s3URL | quote }}
       - name: BUCKET_NAME
-        value: {{ .Values.s3.bucketName }}
+        value: {{required "A target bucket name is required!" .Values.s3.bucketName }}
       - name: FOLDER_NAME
         value: {{ .Values.s3.folderName }}
+      {{ if .Values.s3.keyAuth }}
       - name: ACCESS_KEY
-        value: {{ .Values.s3.accessKey | quote}}
+        value: {{required "An access key ID is required with keyAuth authentication!" .Values.s3.accessKey }}
       - name: SECRET_ACCESS_KEY
-        value: {{ .Values.s3.secretKey | quote }}
+        value: {{required "A secret key is required with keyAuth authentication!" .Values.s3.secretKey }}
+      {{ end }}
       - name: REGION
         value: {{ .Values.s3.region }}
       - name: PREFIX

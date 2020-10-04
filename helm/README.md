@@ -29,6 +29,7 @@ injector.seekret.com/request: sniffer
 | bpfFilter | string | `"not tcp port 9000"` | The filter for the injected pod |
 | s3.bucketName | string | `"seekret"` | Bucket name for pcaps |
 | s3.folderName | string | `"pcaps"` | Folder for pcaps inside bucket |
+| s3.keyAuth | bool | `true` | if true, using HMAC key authentication, otherwise AWS role-based IAM access assumed |
 | s3.accessKey | string | `"seekret"` | Access key for sniffer |
 | s3.secretKey | string | `"seekret123"` | Secret key for sniffer |
 | s3.s3_url | string | `"https://storage.googleapis.com"` | endpoint_url to allow accessing different buckets |

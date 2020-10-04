@@ -10,11 +10,13 @@ injector:
 
 # Sniffer values
 s3:
-  bucketName: seekret
+  bucketName:
   folderName: pcaps
   ## Default url to communicate with GCS buckets
   s3URL: https://storage.googleapis.com
-  ## Set default accesskey, secretkey
+  ## Use HMAC key auth instead of role based
+  keyAuth: true
+  ## Set accessKey, secretKey
   accessKey:
   secretKey:
   ##default region for buckets
