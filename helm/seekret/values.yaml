@@ -10,7 +10,7 @@ injector:
 
 # Sniffer values
 s3:
-  bucketName: seekret
+  bucketName:
   folderName: pcaps
   ## Default url to communicate with GCS buckets
   s3URL: https://storage.googleapis.com
