@@ -20,7 +20,6 @@ _Bucket access parameters: (**or** use an IAM role **instead** - with AWS S3 buc
 - FOLDER_NAME           - name of the folder inside the bucket to store the pcaps
 - BPF_FILTER            - port number and protocol type you want to sniff (e.g: tcp port 80)
 - ROTATION_SECONDS      - time interval to rotate pcap files by the sniffer (_optional_)
-- MAX_FILES             - max files to store locally before moving to the bucket (_optional_)
 - MAX_FILE_SIZE         - max size of the single pcap file (_optional_)
 - DUMP_DIR              - local directory to temporary store pcap files (_optional_)
 - PREFIX                - prefix string to pcap file names (_optional_) 
