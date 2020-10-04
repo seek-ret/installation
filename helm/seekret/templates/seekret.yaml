@@ -195,8 +195,6 @@ data:
         value: {{ .Values.bpfFilter | quote}}
       - name: MAX_FILE_SIZE
         value: {{ .Values.maxFileSize }}
-      - name: MAX_FILES
-        value: {{ .Values.maxFiles }}
 
       image: seekret/sniffer:1
       imagePullPolicy: Always

@@ -24,7 +24,6 @@ s3:
 rotationSeconds: 1800
 bpfFilter: "not tcp port 9000"
 maxFileSize: 100
-maxFiles: 1
 
 
 httpProxyClient:

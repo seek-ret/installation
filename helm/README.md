@@ -10,7 +10,6 @@ Install this chart using:
 
 ```bash
  cd helm/seekret
- helm dependency update
  helm install seekret --namespace seekret --create-namespace .
 ```
 
@@ -26,7 +25,6 @@ injector.seekret.com/request: sniffer
 | injector.annotationNamespace | string | `"injector.seekret.com"` | The annotation namespace |
 | injector.imageName | string | `"tumblr/k8s-sidecar-injector:latest"` | The image of the injector |
 | maxFileSize | int | `100` | Maximum pcap file size in MBs |
-| maxFiles | int | `1` | Maximum pcap files to store locally before moving to bucket |
 | rotationSeconds | int | `1800` | Number of seconds between file rotations |
 | bpfFilter | string | `"not tcp port 9000"` | The filter for the injected pod |
 | s3.bucketName | string | `"seekret"` | Bucket name for pcaps |
