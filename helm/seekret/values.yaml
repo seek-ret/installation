@@ -22,7 +22,7 @@ s3:
 
 
 rotationSeconds: 1800
-bpfFilter: "not tcp port 9000"
+bpfFilter: "tcp and not tcp port 443"
 maxFileSize: 100
 
 
