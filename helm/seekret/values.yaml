@@ -15,8 +15,8 @@ s3:
   ## Default url to communicate with GCS buckets
   s3_url: https://storage.googleapis.com
   ## Set default accesskey, secretkey
-  accessKey: "seekret"
-  secretKey: "seekret123"
+  accessKey:
+  secretKey:
   ##default region for buckets
   region: "us-central1"
 
