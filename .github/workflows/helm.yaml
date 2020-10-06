@@ -1,0 +1,33 @@
+name: helm sanity
+
+on:
+  pull_request:
+    branches: [ '**' ]
+  push:
+    branches: [ 'master' ]
+  workflow_dispatch:
+    branches: [ '**' ]
+
+jobs:
+  helm_sanity:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
+      - uses: azure/setup-helm@v1
+        with:
+          version: v3.2.4
+
+      - name: run tests
+        run: |
+          gcloud container clusters get-credentials ${{ secrets.CLUSTER_NAME }} --region ${{ secrets.REGION }}
+
+          cd tests
+          ./test_helm.sh ${{ secrets.ACCESS_KEY }} ${{ secrets.SECRET_KEY }} ${{ secrets.BUCKET }}
