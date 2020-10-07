@@ -21,13 +21,18 @@ jobs:
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
 
+      - name: start minikube
+        id: minikube
+        uses: manusa/actions-setup-minikube@v2.0.0
+        with:
+          minikube version: 'v1.13.1'
+          kubernetes version: 'v1.19.2'
+
       - uses: azure/setup-helm@v1
         with:
           version: v3.2.4
 
       - name: run tests
         run: |
-          gcloud container clusters get-credentials ${{ secrets.CLUSTER_NAME }} --region ${{ secrets.REGION }}
-
           cd tests
           ./test_helm.sh ${{ secrets.ACCESS_KEY }} ${{ secrets.SECRET_KEY }} ${{ secrets.BUCKET }}
