@@ -73,6 +73,8 @@ cleanupOnError $?
 TEST_ENV_IS_RUNNING=1
 echo "Test node is up and running"
 
-sleep 5
+sleep 10
+gsutil ls gs://$BUCKET_NAME/logs/
 run gsutil ls gs://$BUCKET_NAME/logs/"$POD"_ack.txt
+gsutil ls gs://$BUCKET_NAME/logs/
 cleanup $?
