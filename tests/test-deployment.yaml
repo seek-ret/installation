@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-node
+  labels:
+    app: hello
+spec:
+  selector:
+    matchLabels:
+      app: hello
+  template:
+    metadata:
+      labels:
+        app: hello
+      annotations:
+        injector.seekret.com/request: sniffer
+    spec:
+      containers:
+      - name: hello
+        image: k8s.gcr.io/echoserver:1.4
