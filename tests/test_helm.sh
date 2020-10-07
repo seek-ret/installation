@@ -73,8 +73,11 @@ cleanupOnError $?
 TEST_ENV_IS_RUNNING=1
 echo "Test node is up and running"
 
-sleep 10
-gsutil ls gs://$BUCKET_NAME/logs/
-run gsutil ls gs://$BUCKET_NAME/logs/"$POD"_ack.txt
-gsutil ls gs://$BUCKET_NAME/logs/
-cleanup $?
+
+timeout=30
+while ! $(run gsutil ls gs://$BUCKET_NAME/logs/"$POD"_ack.txt) && test $timeout -gt 0; do
+  sleep 1
+  timeout=$(expr $timeout - 1)
+done
+
+cleanup test $timeout -gt 0
