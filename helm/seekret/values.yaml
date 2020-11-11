@@ -3,6 +3,7 @@
 # Declare variables to be passed into your templates.
 
 name: seekret-sidecar-injector
+image: seekret/sniffer:1
 # Injector values
 injector:
   annotaionNamespace: injector.seekret.com
