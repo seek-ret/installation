@@ -10,12 +10,16 @@ Install this chart using:
 
 ```bash
  cd helm/seekret
- helm install seekret --namespace seekret --create-namespace .
+ helm install seekret .
 ```
+
+We create a namespace called seekret-injector. This is hard coded since the certificates are signed on those domains.
 
 The [configuration](#Chart Values) section lists the parameters that can be configured during installation.
 To enable the sniffer on a deployment, add the following annotation:
 injector.seekret.com/request: sniffer
+
+
 
 ## Chart Values
 

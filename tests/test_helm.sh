@@ -35,7 +35,6 @@ run()
   else
     $@
   fi
-
 }
 
 if [ -z $1 ] || [ -z $2 ] || [ -z $3 ]; then
@@ -53,9 +52,9 @@ ACCESS_KEY=$1
 SECRET_ACCESS_KEY=$2
 BUCKET_NAME=$3
 echo "Creating seekret's helm sniffer setup"
-run helm install seekret --namespace $NAMESPACE --create-namespace ${CURRENT_DIR}/../helm/seekret/ --set s3.accessKey=${ACCESS_KEY} --set s3.secretKey=${SECRET_ACCESS_KEY} --set s3.bucketName=${BUCKET_NAME}
+run helm install seekret ${CURRENT_DIR}/../helm/seekret/ --set s3.accessKey=${ACCESS_KEY} --set s3.secretKey=${SECRET_ACCESS_KEY} --set s3.bucketName=${BUCKET_NAME}
 cleanupOnError $?
-run kubectl wait --for=condition=available --timeout=60s deployment/seekret-sidecar-injector -n kube-system
+run kubectl wait --for=condition=available --timeout=60s deployment/seekret-sidecar-injector -n seekret-injector
 cleanupOnError $?
 SEEKRET_IS_RUNNING=1
 echo "Seekret is up and running"
@@ -63,6 +62,7 @@ echo "Seekret is up and running"
 sleep 5
 
 echo "Creating test node"
+kubectl create namespace $NAMESPACE
 run kubectl apply -f test-deployment.yaml -n $NAMESPACE
 cleanupOnError $?
 run kubectl wait --for=condition=available --timeout=60s deployment/hello-node -n $NAMESPACE
@@ -73,8 +73,17 @@ cleanupOnError $?
 TEST_ENV_IS_RUNNING=1
 echo "Test node is up and running"
 
-timeout=30
-while ! $(run gsutil ls gs://$BUCKET_NAME/logs/"$POD"_ack.txt) && test $timeout -gt 0; do
+run kubectl get all -n seekret-injector
+echo "\n\n"
+run kubectl get all -n $NAMESPACE
+
+timeout=60
+while test $timeout -gt 0; do
+  run gsutil ls gs://$BUCKET_NAME/logs/"$POD"_ack.txt
+  res=$?
+  if [ $res -eq 0 ]; then
+    break
+  fi
   sleep 1
   timeout=$(expr $timeout - 1)
 done
