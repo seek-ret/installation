@@ -10,7 +10,7 @@ cleanup() {
 		run kubectl delete deployment hello-node -n $NAMESPACE
 	fi
 	if [ $SEEKRET_IS_RUNNING -eq 1 ]; then
-		run helm uninstall seekret -n $NAMESPACE
+		run helm uninstall seekret
 	fi
 
   if [ $1 -ne 0 ]; then
@@ -52,7 +52,7 @@ ACCESS_KEY=$1
 SECRET_ACCESS_KEY=$2
 BUCKET_NAME=$3
 echo "Creating seekret's helm sniffer setup"
-run helm install seekret ${CURRENT_DIR}/../helm/seekret/ --set s3.accessKey=${ACCESS_KEY} --set s3.secretKey=${SECRET_ACCESS_KEY} --set s3.bucketName=${BUCKET_NAME} -n $NAMESPACE
+run helm install seekret ${CURRENT_DIR}/../helm/seekret/ --set s3.accessKey=${ACCESS_KEY} --set s3.secretKey=${SECRET_ACCESS_KEY} --set s3.bucketName=${BUCKET_NAME}
 cleanupOnError $?
 run kubectl wait --for=condition=available --timeout=60s deployment/seekret-sidecar-injector -n seekret-injector
 cleanupOnError $?
