@@ -8,7 +8,7 @@ on:
     branches: [ '**' ]
 
 jobs:
-  helm_push:
+  helm_check_version:
     runs-on: ubuntu-18.04
     steps:
       - name: checkout
@@ -22,10 +22,10 @@ jobs:
 
       - uses: azure/setup-helm@v1
 
-      - name: push
+      - name: check version
         run: |
           helm repo add seekret-repo https://helm.seekret.com
           helm repo update
           current_helm_version=$(helm show chart ./helm/seekret | awk NF | tail -1 | awk '{print $2}')
           newer_versions=$(helm search repo seekret-repo/seekret --version "^${current_helm_version}" | tail -n+2 | awk '{print $2}')
-          test -z $newer_versions && { echo "::error ::You need to upgrade you version!"; exit 1; }
+          test -z $newer_versions || { echo "::error ::You need to upgrade you version!"; exit 1; }
