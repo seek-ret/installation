@@ -170,6 +170,9 @@ data:
     initContainers:
     - name: init-net
       image: {{ .Values.tlsProxy.initImage }}
+      env:
+      - name: TARGET_PORT
+        value: {{ .Values.tlsProxy.targetPort }}
       securityContext:
         capabilities:
           add:
