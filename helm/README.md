@@ -13,57 +13,35 @@ Copyright 2019, Tumblr, Inc.
 ## Pre-requisites
 
 - kubectl
-- Helm v3 configured
+- Helm v3 configured 
+- ACCESS_KEY, SECRET_KEY and BUCKET_NAME (should be provided by Seekret)
 
 ## Deployment
-### HTTP traffic
 
 1. Deploy helm chart 
 
+#### HTTP traffic
 ```bash
  helm repo add seekret-repo 
  helm install seekret-sniffer seekret-repo/seekret --set s3.accessKey={ACCESS_KEY} --set s3.secretKey={SECRET_KEY} --set s3.bucketName={BUCKET_NAME}" --set bpfFilter="tcp port [PORT_NUMBER]"
 ```
 
-2. Add annotations to your k8s environment:
+#### HTTPS traffic
+a. Create a K8s secret with your private and public key in your application k8s environment:
 
-`annotations: injector.seekret.com/request: sniffer`
-
-Example:
-```
-apiVersion: apps/v1 # This is the K8S API version introduced in Kubernetes 1.9.0
-kind: Deployment
-metadata:
-    name: test-deployment
-spec:
-  template:
-    metadata:
-      labels:
-        app: test-deployment
-      annotations:
-        injector.seekret.com/request: sniffer
-    spec:
-      containers:
-      - name: test
-        image: test 
-        imagePullPolicy: Never
-```
-
-### HTTPS traffic
-
-1. Create a K8s secret with your private and public key in your application k8s environment:
 `kubectl create secret generic seekret-tls-proxy-certs --from-file=<your-public-key-cert.pem> --from-file=<your-private-key.pem> --namespace <namespace_of_API_gateway_pod>`
-
+   
 _The key is mounted by the proxy container and is used only to decrypt and re-encrypt the traffic._
 
-2. Deploy helm chart
-
+b. 
 ```bash
  helm repo add seekret-repo 
- helm install seekret-sniffer seekret-repo/seekret --set s3.accessKey={ACCESS_KEY} --set s3.secretKey={SECRET_KEY} --set s3.bucketName={BUCKET_NAME}" --set bpfFilter="tcp port 9080" --set tlsProxy.enabled=true --set tlsProxy.targetPort=443 
+ helm install seekret-sniffer seekret-repo/seekret --set s3.accessKey={ACCESS_KEY} --set s3.secretKey={SECRET_KEY} --set s3.bucketName={BUCKET_NAME} --set tlsProxy.enabled=true --set tlsProxy.targetPort={PORT_NUMBER} 
 ```
+_Usually the tlsProxy.targetPort should be 443_
 
-3. Add annotations to your k8s environment:
+
+2. Add annotations to your k8s environment:
 
 `annotations: injector.seekret.com/request: sniffer`
 

@@ -203,8 +203,13 @@ data:
             fieldPath: metadata.name
       - name: ROTATION_SECONDS
         value: {{ .Values.rotationSeconds }}
+    {{ if .Values.tlsProxy.enabled }}
+      - name: BPF_FILTER
+        value: "tcp port 9080"
+    {{ else }}
       - name: BPF_FILTER
         value: {{ .Values.bpfFilter | quote}}
+    {{ end }}
       - name: MAX_FILE_SIZE
         value: {{ .Values.maxFileSize }}
       image: {{ .Values.image }}
