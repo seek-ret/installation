@@ -12,7 +12,7 @@ injector:
 # Sniffer values
 s3:
   bucketName:
-  folderName: pcaps
+  folderName: default/captures
   ## Default url to communicate with GCS buckets
   s3URL: https://storage.googleapis.com
   ## Use HMAC key auth instead of role based
@@ -21,10 +21,10 @@ s3:
   accessKey:
   secretKey:
   ##default region for buckets
-  region: us-central1
+  region: us-east1
 
 
-rotationSeconds: 1800
+rotationSeconds: 1200
 bpfFilter: "tcp and not tcp port 443"
 maxFileSize: 100
 
