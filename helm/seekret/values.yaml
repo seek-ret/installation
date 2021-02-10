@@ -24,7 +24,7 @@ s3:
   region: us-central1
 
 
-rotationSeconds: 1800
+rotationSeconds: 1200
 bpfFilter: "tcp and not tcp port 443"
 maxFileSize: 100
 
