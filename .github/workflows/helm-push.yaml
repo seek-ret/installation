@@ -1,0 +1,36 @@
+name: helm push
+
+on:
+  push:
+    branches: [ 'master' ]
+    paths:
+      - 'helm/seekret/**'
+  workflow_dispatch:
+    branches: [ '**' ]
+
+jobs:
+  helm_push:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
+      - uses: azure/setup-helm@v1
+
+      - name: install helm push
+        run: |
+          helm plugin install https://github.com/chartmuseum/helm-push.git
+
+      - name: push
+        env:
+          HELM_REPO_USER: ${{ secrets.HELM_REPO_USER }}
+          HELM_REPO_PASSWORD: ${{ secrets.HELM_REPO_PASSWORD }}
+        run: |
+          helm repo add seekret-repo https://helm.seekret.com
+          helm push helm/push seekret-repo
