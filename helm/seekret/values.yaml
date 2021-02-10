@@ -12,7 +12,7 @@ injector:
 # Sniffer values
 s3:
   bucketName:
-  folderName: pcaps
+  folderName: default/captures
   ## Default url to communicate with GCS buckets
   s3URL: https://storage.googleapis.com
   ## Use HMAC key auth instead of role based
