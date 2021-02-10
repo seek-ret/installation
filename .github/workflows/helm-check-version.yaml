@@ -1,0 +1,31 @@
+name: helm check version
+
+on:
+  pull_request:
+    paths:
+      - 'helm/seekret/**'
+  workflow_dispatch:
+    branches: [ '**' ]
+
+jobs:
+  helm_push:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
+      - uses: azure/setup-helm@v1
+
+      - name: push
+        run: |
+          helm repo add seekret-repo https://helm.seekret.com
+          helm repo update
+          current_helm_version=$(helm show chart ./helm/seekret | awk NF | tail -1 | awk '{print $2}')
+          newer_versions=$(helm search repo seekret-repo/seekret --version "^${current_helm_version}" | tail -n+2 | awk '{print $2}')
+          test -z $newer_versions && { echo "::error ::You need to upgrade you version!"; exit 1; }
