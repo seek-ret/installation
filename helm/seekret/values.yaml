@@ -21,7 +21,7 @@ s3:
   accessKey:
   secretKey:
   ##default region for buckets
-  region: us-central1
+  region: us-east1
 
 
 rotationSeconds: 1200
