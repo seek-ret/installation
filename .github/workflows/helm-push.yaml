@@ -1,15 +1,15 @@
-name: helm sanity
+name: helm push
 
 on:
-  pull_request:
-    branches: [ '**' ]
   push:
     branches: [ 'master' ]
+    paths:
+      - 'helm/seekret/**'
   workflow_dispatch:
     branches: [ '**' ]
 
 jobs:
-  helm_sanity:
+  helm_push:
     runs-on: ubuntu-18.04
     steps:
       - name: checkout
@@ -21,16 +21,13 @@ jobs:
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
 
-      - name: start minikube
-        id: minikube
-        uses: manusa/actions-setup-minikube@v2.0.1
-        with:
-          minikube version: 'v1.13.1'
-          kubernetes version: 'v1.19.2'
-
       - uses: azure/setup-helm@v1
 
-      - name: run tests
+      - name: install helm push
         run: |
-          cd tests
-          ./test_helm.sh ${{ secrets.ACCESS_KEY }} ${{ secrets.SECRET_KEY }} ${{ secrets.BUCKET }} -v
+          helm plugin install https://github.com/chartmuseum/helm-push.git
+
+      - name: push
+        run: |
+          helm repo add seekret-repo https://helm.seekret.com
+          helm push helm/seekret seekret-repo -u ${{ secrets.HELM_REPO_USER }} -p ${{ secrets.HELM_REPO_PASSWORD }}
