@@ -13,11 +13,14 @@ cleanup() {
 		run helm uninstall seekret
 	fi
 
+	run kubectl delete namespaces $NAMESPACE
+
   if [ $1 -ne 0 ]; then
     echo "Failed."
   else
     echo "Success"
   fi
+
 	exit $1
 }
 
