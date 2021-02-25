@@ -8,6 +8,8 @@ image: seekret/sniffer:1
 injector:
   annotaionNamespace: injector.seekret.com
   imageName: tumblr/k8s-sidecar-injector:latest
+  namespace: seekret-injector
+  createNamespace: true
 
 # Sniffer values
 s3:
