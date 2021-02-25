@@ -1,10 +1,12 @@
+{{ if .Values.injector.createNamespace }}
 ---
 kind: Namespace
 apiVersion: v1
 metadata:
-  name: seekret-injector
+  name: {{ .Values.injector.namespace }}
   labels:
-    name: seekret-injector
+    name: {{ .Values.injector.namespace }}
+{{ end }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -22,7 +24,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: {{ .Values.name }}
-    namespace: seekret-injector
+    namespace: {{ .Values.injector.namespace }}
 roleRef:
   kind: ClusterRole
   name: {{ .Values.name }}
@@ -32,7 +34,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: {{ .Values.name }}
-  namespace: seekret-injector
+  namespace: {{ .Values.injector.namespace }}
   labels:
     kubernetes.io/cluster-service: "true"
     addonmanager.kubernetes.io/mode: Reconcile
@@ -41,7 +43,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{printf "%s-prod" .Values.name}}
-  namespace: seekret-injector
+  namespace: {{ .Values.injector.namespace }}
   labels:
     app: {{ .Values.name }}
 spec:
@@ -62,7 +64,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.name }}
-  namespace: seekret-injector
+  namespace: {{ .Values.injector.namespace }}
   labels:
     app: {{ .Values.name }}
 spec:
@@ -128,7 +130,7 @@ data:
 kind: Secret
 metadata:
   name: {{ .Values.name }}
-  namespace: seekret-injector
+  namespace: {{ .Values.injector.namespace }}
 type: Opaque
 ---
 apiVersion: admissionregistration.k8s.io/v1beta1
@@ -148,15 +150,15 @@ webhooks:
   clientConfig:
     service:
       name: {{printf "%s-prod" .Values.name}}
-      namespace: seekret-injector
+      namespace: {{ .Values.injector.namespace }}
       path: "/mutate"   # what /url/slug to send requests at
     caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUZvekNDQTRzQ0ZEK0VNYXZ0bGxCSlgreXgvU3lEYW1lMmg5VUtNQTBHQ1NxR1NJYjNEUUVCQ3dVQU1JR00KTVFzd0NRWURWUVFHRXdKVlV6RVJNQThHQTFVRUNBd0lUbVYzSUZsdmNtc3hGakFVQmdOVkJBY01EVTVsZHlCWgpiM0pySUVOcGRIa3hFREFPQmdOVkJBb01CM05sWld0eVpYUXhJREFlQmdOVkJBTU1GMnM0Y3kxemFXUmxZMkZ5CkxXbHVhbVZqZEc5eUxVTkJNUjR3SEFZSktvWklodmNOQVFrQkZnOXVkV3hzUUY5ZlJFOU5RVWxPWDE4d0lCY04KTWpBeE1URXhNRGN5TmpBeVdoZ1BORGMxT0RFd01EZ3dOekkyTURKYU1JR01NUXN3Q1FZRFZRUUdFd0pWVXpFUgpNQThHQTFVRUNBd0lUbVYzSUZsdmNtc3hGakFVQmdOVkJBY01EVTVsZHlCWmIzSnJJRU5wZEhreEVEQU9CZ05WCkJBb01CM05sWld0eVpYUXhJREFlQmdOVkJBTU1GMnM0Y3kxemFXUmxZMkZ5TFdsdWFtVmpkRzl5TFVOQk1SNHcKSEFZSktvWklodmNOQVFrQkZnOXVkV3hzUUY5ZlJFOU5RVWxPWDE4d2dnSWlNQTBHQ1NxR1NJYjNEUUVCQVFVQQpBNElDRHdBd2dnSUtBb0lDQVFERklmVys3NFBLSGlPZjltOTB1aUNvTGRLQmMya0lUSW5PMHpBaWszM3cyUlVhCm5FeG4rYWJFU1pmVHdZZXdEa3o0RytCL2RDZnN5RlRsb1RiN1dCcE9aNGhqckVEK3I4ZE1NWGNURDA1alNOMG8KbnNVTWEzMVh6dkV3ZUFBVDNrUlRmcEtUb3M0cjRDY1hqQkVhWmFPWmNIMEtiQ005WWxGS3pLRkljdTl2QlJnQQo4NVhLOGhqd1lzMy9GOVIwT0JEM01oak82dW9iRnVTTnpvV2tjb29QczZWZjZnWE1nNlhMbG1EcjM0V0RQa21GCjlNaVJMNUlvQStzK0VNOGtkV0FuTkFCTEcweS90aXNib3NpVXY5bVdwZlRMS0ZDZWNCQWwrRzJXSU9UWkFIOGoKWDFXcXlxYXJYTHBIZnloL0pJbi9UY3N1VnZCcGtBM2JVRHRmQ01KTGxtOGw1dllwNHNCQkJNeGwyb0VpSVlBaQp2cjZQRFpFZmhTNEp0REt3N3U1SGtHU01JVmtXSFIxcjlRNmlHL0dqNVZlYUsyVjVMZXFSRHkxRW1FSmRYeGlaCkhwQXFob0IyYWxFSGwxTFhjQnk5b2NMcCtLcXJUTEpUYXpURWRhblA4bEIyZkhwRXoyVU5Kdit0Ulo3NHoyWEoKVW5oUXB0RDdDb3hMWlJPc1VXb3FlMWNEOXVkaXllOVVnT1BtYWRRZ2ZaYWhLaUwzdU1YaUdrNzdsdkVvVG5iagpRbklTTStpdklZYWlCVkRKYnFib0IzOTd2ZHNCc3dmNjdSS1hTVmVpUFg5UXJIbTBjNUNaUkVLQTJoR1RJaGcwCndnZVNuTGNTazdNOUhHWE9RVGsrdHo0UDE0RXJYdStTd1gvQXRQQml2SWFuU3U4WGc2dFF1MTdFU09SVUJ3SUQKQVFBQk1BMEdDU3FHU0liM0RRRUJDd1VBQTRJQ0FRQTlDODc1bFMyZWxKdU1aaFNUdlRLUlZZTE9CQkVpQS83awo3YitZMGhKenFNOWVtcmxsSkZRUXRMajltUFJQVis4SVBkc3lkVFFQNmVoNDZtVU13NEE5eVpudGMwN1JleklUCnM3TW1uaUl4ZUVqZkQ1Mk00TFJwdTJGZUxiYmtaWkltdHdSeWk0MGpyZHJMb01VTUhsazRDdmREQUhsZVl5MUMKTlgzMDBLNDJ2TnFablNPWjU0NGNodmE0NzhPY3JsbW0zSGt6UW15ZVM2OVVkajBqWllwZzFDd1NvTXZxSjZGMwpqeVNBRDN5THVFS2JuY01RWlNIeU92Mlo2NXc3cDFQejRieEwyZTVjYzl6VjZGL09vZHR3K3J6NitSYU1GSHcyClQ1d0ZvcUVjd2loVUdSbFcrTTU0a1ROMzRPMk9HcWMvK0ZUaHJSRnpObWdRZUJiakJWRFFEOUd3c01uYUYxakUKVk1lcmxxUTJMTHJtUm80RVQ1dS9YVFd4VDFmZ1lQRUlMY2ZjVllUcjI5QmZ4aXdmeGpnTHJQc2RqWHRBYVh2SgoxSGYrekVQMmJKQkplN0dkOENEYi95eXNTdWJIZlNGUCtXMWVuRklPaXJ4d2VacWlMRGUxZGQ2a1liQzZBUjRTCkRUMzdXVzBjeGdDT2hmcjFpVU5XUUFZaGtIbGVLalhkOFhKUmdpbEJzUEVpZ0cvTUlabVlreURiWTU2clhXMzMKNnR6MzR6ejZKS0Mzc3l5QTF2Z1YrVlFUK3VpOGdlSzVFSUVsUjVvWEJGT2JpbUVtSnJvdCtzSDR3aTJJTVNjaQpoZmdTY3hDVVBib3B1UVZGeE40K29NL0hJaHJaaU9sYlFpRjUvcm5oSFNMaDVqZHZkaU9adUVFNEhOVVV4WmFtCnVVQXZVQ2pHYkE9PQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: seekret-injector
-  namespace: seekret-injector
+  name: {{ .Values.injector.namespace }}
+  namespace: {{ .Values.injector.namespace }}
   labels:
     app: {{ .Values.name }}
 data:
