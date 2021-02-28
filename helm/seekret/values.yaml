@@ -10,6 +10,9 @@ injector:
   imageName: tumblr/k8s-sidecar-injector:latest
   namespace: seekret-injector
   createNamespace: true
+  customSidecarCert:
+  customSidecarKey:
+  customSidecarCa:
 
 # Sniffer values
 s3:
