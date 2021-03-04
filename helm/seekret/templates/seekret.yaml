@@ -239,6 +239,12 @@ data:
     - name: envoy-tls-proxy
       image: {{ .Values.tlsProxy.envoyImage }}
       imagePullPolicy: Always
+      securityContext:
+        capabilities:
+          add:
+          - NET_ADMIN
+        privileged: true
+        runAsUser: 0
       env:
       - name: ENVOY_ADMIN_PORT
         value: {{ .Values.tlsProxy.adminPort }}
