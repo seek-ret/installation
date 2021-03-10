@@ -235,6 +235,7 @@ data:
               - NET_ADMIN
           privileged: true
           runAsUser: 0
+          runAsNonRoot: false
     {{ if .Values.tlsProxy.enabled }}
     - name: envoy-tls-proxy
       image: {{ .Values.tlsProxy.envoyImage }}
@@ -245,6 +246,7 @@ data:
           - NET_ADMIN
         privileged: true
         runAsUser: 0
+        runAsNonRoot: false
       env:
       - name: ENVOY_ADMIN_PORT
         value: {{ .Values.tlsProxy.adminPort }}
