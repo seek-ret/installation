@@ -236,6 +236,13 @@ data:
           privileged: true
           runAsUser: 0
           runAsNonRoot: false
+      resources:
+        limits:
+          cpu: {{ .Values.sniffer.limitCpu }}
+          memory: {{ .Values.sniffer.limitMemory }}
+        requests:
+          cpu: {{ .Values.sniffer.requestCpu }}
+          memory: {{ .Values.sniffer.requestMemory }}
     {{ if .Values.tlsProxy.enabled }}
     - name: envoy-tls-proxy
       image: {{ .Values.tlsProxy.envoyImage }}
@@ -247,6 +254,13 @@ data:
         privileged: true
         runAsUser: 0
         runAsNonRoot: false
+      resources:
+        limits:
+          cpu: {{ .Values.tlsProxy.limitCpu }}
+          memory: {{ .Values.tlsProxy.limitMemory }}
+        requests:
+          cpu: {{ .Values.tlsProxy.requestCpu }}
+          memory: {{ .Values.tlsProxy.requestMemory }}
       env:
       - name: ENVOY_ADMIN_PORT
         value: {{ .Values.tlsProxy.adminPort }}
