@@ -48,6 +48,12 @@ gcsCredentials:
   name: seekret-gcscreds
   creds:
 
+sniffer:
+  requestCpu: "100m"
+  requestMemory: "100Mi"
+  limitCpu: "500m"
+  limitMemory: "256Mi"
+
 tlsProxy:
   enabled: false
   certsSecretName: seekret-tls-proxy-certs
@@ -56,3 +62,7 @@ tlsProxy:
   targetPort: 443
   envoyImage: seekret/envoy-https-proxy:1
   initImage: seekret/https-proxy-init:1
+  requestCpu: "100m"
+  requestMemory: "50Mi"
+  limitCpu: "500m"
+  limitMemory: "256Mi"
