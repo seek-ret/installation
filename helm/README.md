@@ -74,8 +74,8 @@ Those values can be configured during installation using ``` --set [ParamName]=[
 | name | string | `"seekret-sidecar-injector"` | App name |
 | injector.annotationNamespace | string | `"injector.seekret.com"` | The annotation namespace |
 | injector.imageName | string | `"tumblr/k8s-sidecar-injector:latest"` | The image of the injector |
-| maxFileSize | int | `100` | Maximum pcap file size in MBs |
-| rotationSeconds | int | `1200` | Number of seconds between file rotations |
+| maxFileSize | int | `50` | Maximum pcap file size in MBs |
+| rotationSeconds | int | `600` | Number of seconds between file rotations |
 | bpfFilter | string | `"tcp and not tcp port 443"` | The bpf filter for the sniffer |
 | s3.bucketName | string | `` | Bucket name for pcaps |
 | s3.folderName | string | `"default/captures"` | Folder for pcaps inside bucket |
