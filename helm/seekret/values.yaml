@@ -29,9 +29,9 @@ s3:
   region: us-east1
 
 
-rotationSeconds: 1200
+rotationSeconds: 600
 bpfFilter: "tcp and not tcp port 443"
-maxFileSize: 100
+maxFileSize: 50
 
 
 httpProxyClient:
