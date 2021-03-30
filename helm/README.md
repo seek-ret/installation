@@ -23,7 +23,7 @@ Copyright 2019, Tumblr, Inc.
 #### HTTP traffic
 ```bash
  helm repo add seekret-repo 
- helm install seekret-sniffer seekret-repo/seekret --set s3.accessKey={ACCESS_KEY} --set s3.secretKey={SECRET_KEY} --set s3.bucketName={BUCKET_NAME}" --set bpfFilter="tcp port [PORT_NUMBER]"
+ helm install seekret-sniffer seekret-repo/seekret --set s3.accessKey={ACCESS_KEY} --set s3.secretKey={SECRET_KEY} --set s3.bucketName={BUCKET_NAME} --set bpfFilter="tcp port [PORT_NUMBER]"
 ```
 
 #### HTTPS traffic
