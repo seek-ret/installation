@@ -6,7 +6,7 @@ name: seekret-sidecar-injector
 image: seekret/sniffer:1
 # Injector values
 injector:
-  annotaionNamespace: injector.seekret.com
+  annotationNamespace: injector.seekret.com
   imageName: tumblr/k8s-sidecar-injector:latest
   namespace: seekret-injector
   createNamespace: true
@@ -66,3 +66,6 @@ tlsProxy:
   requestMemory: "50Mi"
   limitCpu: "500m"
   limitMemory: "256Mi"
+
+networkPolicy:
+  enabled: false
