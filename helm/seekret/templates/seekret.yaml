@@ -60,6 +60,7 @@ spec:
   selector:
     app: {{ .Values.name }}
 ---
+{{ if .Values.networkPolicy.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -76,6 +77,7 @@ spec:
   policyTypes:
     - Ingress
 ---
+{{end}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -228,9 +230,15 @@ data:
         value: {{ .Values.s3.folderName }}
       {{ if .Values.s3.keyAuth }}
       - name: ACCESS_KEY
-        value: {{required "An access key ID is required with keyAuth authentication!" .Values.s3.accessKey }}
+        valueFrom:
+          secretKeyRef:
+            name: {{ .Values.s3.secretName }}
+            key: accessKey
       - name: SECRET_ACCESS_KEY
-        value: {{required "A secret key is required with keyAuth authentication!" .Values.s3.secretKey }}
+        valueFrom:
+          secretKeyRef:
+            name: {{ .Values.s3.secretName }}
+            key: secretKey
       {{ end }}
       - name: REGION
         value: {{ .Values.s3.region }}

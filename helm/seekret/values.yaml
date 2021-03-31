@@ -16,6 +16,7 @@ injector:
 
 # Sniffer values
 s3:
+  secretName: seekret-traffic
   bucketName:
   folderName: default/captures
   ## Default url to communicate with GCS buckets
@@ -66,3 +67,6 @@ tlsProxy:
   requestMemory: "50Mi"
   limitCpu: "500m"
   limitMemory: "256Mi"
+
+networkPolicy:
+  enabled: true
