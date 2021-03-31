@@ -2,7 +2,7 @@ Seekret
 =======
 A Helm chart for Kubernetes
 
-Current chart version is `0.3.2`
+Current chart version is `0.4.1`
 
 ## License
 
@@ -77,6 +77,7 @@ Those values can be configured during installation using ``` --set [ParamName]=[
 | maxFileSize | int | `50` | Maximum pcap file size in MBs |
 | rotationSeconds | int | `600` | Number of seconds between file rotations |
 | bpfFilter | string | `"tcp and not tcp port 443"` | The bpf filter for the sniffer |
+| networkPolicy.enabled | bool | `true` | Whether to add a network policy |
 | s3.bucketName | string | `` | Bucket name for pcaps |
 | s3.folderName | string | `"default/captures"` | Folder for pcaps inside bucket |
 | s3.keyAuth | bool | `true` | if true, using HMAC key authentication, otherwise AWS role-based IAM access assumed |

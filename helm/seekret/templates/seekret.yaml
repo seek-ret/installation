@@ -139,7 +139,7 @@ spec:
         - name: "CONFIGMAP_LABELS"
           value: {{printf "app=%s" .Values.name | quote}}
         - name: "ANNOTATION_NAMESPACE"
-          value: {{ .Values.injector.annotaionNamespace | quote}}
+          value: {{ .Values.injector.annotationNamespace | quote}}
 ---
 apiVersion: v1
 data:
@@ -163,7 +163,7 @@ metadata:
   labels:
     app: {{ .Values.name }}
 webhooks:
-- name: {{ .Values.injector.annotaionNamespace }}
+- name: {{ .Values.injector.annotationNamespace }}
   failurePolicy: "Ignore" # we fail "open" if the webhook is down hard
   rules:
   - operations: [ "CREATE" ]
