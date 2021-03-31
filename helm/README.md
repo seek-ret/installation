@@ -82,7 +82,7 @@ Those values can be configured during installation using ``` --set [ParamName]=[
 | s3.keyAuth | bool | `true` | if true, using HMAC key authentication, otherwise AWS role-based IAM access assumed |
 | s3.accessKey | string | `` | Access key for sniffer |
 | s3.secretKey | string | `` | Secret key for sniffer |
-| s3.s3_url | string | `"https://storage.googleapis.com"` | endpoint_url to allow accessing different buckets |
+| s3.s3URL | string | `"https://storage.googleapis.com"` | endpoint_url to allow accessing different buckets |
 | s3.region | string | `"us-east1"` | Default region of the target bucket |
 | httpProxyClient.enabled | bool | `false` | Whether to deploy Seekret's HTTP Proxy |
 | httpProxyClient.image | string | `"seekret/http-proxy-client:1"` | Docker image of the HTTP Proxy client |
