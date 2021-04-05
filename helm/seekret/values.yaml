@@ -27,6 +27,7 @@ s3:
   secretKey:
   ##default region for buckets
   region: us-east1
+  maxBandwidth: ""
 
 
 rotationSeconds: 600

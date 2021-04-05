@@ -234,6 +234,10 @@ data:
       - name: SECRET_ACCESS_KEY
         value: {{required "A secret key is required with keyAuth authentication!" .Values.s3.secretKey }}
       {{ end }}
+      {{ if ne (toString .Values.s3.maxBandwidth) "" }}
+      - name: MAX_BANDWIDTH
+        value: {{ .Values.s3.maxBandwidth }}
+      {{ end }}
       - name: REGION
         value: {{ .Values.s3.region }}
       - name: PREFIX

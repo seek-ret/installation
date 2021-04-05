@@ -2,7 +2,7 @@ Seekret
 =======
 A Helm chart for Kubernetes
 
-Current chart version is `0.4.1`
+Current chart version is `0.4.2`
 
 ## License
 
@@ -85,6 +85,7 @@ Those values can be configured during installation using ``` --set [ParamName]=[
 | s3.secretKey | string | `` | Secret key for sniffer |
 | s3.s3URL | string | `"https://storage.googleapis.com"` | endpoint_url to allow accessing different buckets |
 | s3.region | string | `"us-east1"` | Default region of the target bucket |
+| s3.maxBandwidth | string | `` | Max bandwidth for uploading pcaps to the bucket. Defaults to "without limit" |
 | httpProxyClient.enabled | bool | `false` | Whether to deploy Seekret's HTTP Proxy |
 | httpProxyClient.image | string | `"seekret/http-proxy-client:1"` | Docker image of the HTTP Proxy client |
 | httpProxyClient.target | string | `nil` | Target URL for the proxy. The value must include a schema ("http://") |
