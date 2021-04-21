@@ -5,12 +5,12 @@ Parameters:
   SourceEni:
     Type: String
     Description: The ID of the Customer's Application ENI to mirror.
-    Default: eni-083d88d47456356d5
+    #Default: <Source ENI>
 
   TargetEni:
     Type: String
     Description: The ID of the Seekret Sniffer's ENI to mirror to.
-    Default: eni-0da33f8c8e5523956
+    #Default: <Target ENI>
 
 Resources:
   MirrorTarget:
@@ -130,14 +130,14 @@ Resources:
     Type: AWS::EC2::TrafficMirrorFilterRule
     Properties:
       Description: Rule to reject ALB <> Target TCP ingress from VPC (drop target responses)
-      DestinationCidrBlock: 10.0.0.0/16
+      DestinationCidrBlock: !ImportValue CUSTOMER-VpcIpv4Cidr
       DestinationPortRange:
         FromPort: 0
         ToPort: 65535
       Protocol: 6 # tcp
       RuleAction: reject
       RuleNumber: 2
-      SourceCidrBlock: 10.0.0.0/16
+      SourceCidrBlock: !ImportValue CUSTOMER-VpcIpv4Cidr
       SourcePortRange:
         FromPort: 0
         ToPort: 65535
@@ -148,14 +148,14 @@ Resources:
     Type: AWS::EC2::TrafficMirrorFilterRule
     Properties:
       Description: Rule to reject ALB <> Target TCP egress to VPC (drop target requests)
-      DestinationCidrBlock: 10.0.0.0/16
+      DestinationCidrBlock: !ImportValue CUSTOMER-VpcIpv4Cidr
       DestinationPortRange:
         FromPort: 0
         ToPort: 65535
       Protocol: 6 # tcp
       RuleAction: reject
       RuleNumber: 2
-      SourceCidrBlock: 10.0.0.0/16
+      SourceCidrBlock: !ImportValue CUSTOMER-VpcIpv4Cidr
       SourcePortRange:
         FromPort: 0
         ToPort: 65535
@@ -176,14 +176,14 @@ Resources:
     Type: AWS::EC2::TrafficMirrorFilterRule
     Properties:
       Description: Accept TCP ingress from VPC (target responses).
-      DestinationCidrBlock: 10.0.0.0/16
+      DestinationCidrBlock: !ImportValue CUSTOMER-VpcIpv4Cidr
       DestinationPortRange:
         FromPort: 0
         ToPort: 65535
       Protocol: 6 # tcp
       RuleAction: accept
       RuleNumber: 1
-      SourceCidrBlock: 10.0.0.0/16
+      SourceCidrBlock: !ImportValue CUSTOMER-VpcIpv4Cidr
       SourcePortRange:
         FromPort: 0
         ToPort: 65535
@@ -194,7 +194,7 @@ Resources:
     Type: AWS::EC2::TrafficMirrorFilterRule
     Properties:
       Description: Accept TCP egress to VPC (target requests).
-      DestinationCidrBlock: 10.0.0.0/16
+      DestinationCidrBlock: !ImportValue CUSTOMER-VpcIpv4Cidr
       DestinationPortRange:
         FromPort: 0
         ToPort: 65535

@@ -12,10 +12,10 @@ Resources:
     Properties:
       GroupDescription: !Sub Security group for ${AWS::StackName} instance
       GroupName: !Sub ${AWS::StackName}-sg
-      VpcId: vpc-0442301e3b17ec686 #change to customer's vpc ID
+      # VpcId: CUSTOMER-VpcId - uncomment and change to customer's vpc ID
       SecurityGroupIngress:
-        #change CUSTOMER-VpcIpv4Cidr to vpc ipv4Cidr
-        - { IpProtocol: udp, FromPort: 4789, ToPort: 4789, CidrIp: 10.0.0.0/16, Description: 'Allow mirrored traffic from VPC' }
+        #uncomment next line and change CUSTOMER-VpcIpv4Cidr to vpc ipv4Cidr
+        #- { IpProtocol: udp, FromPort: 4789, ToPort: 4789, CidrIp: CUSTOMER-VpcIpv4Cidr, Description: 'Allow mirrored traffic from VPC' }
       Tags:
         - { Key: Name, Value: !Sub '${AWS::StackName}-sg' }
 
@@ -84,4 +84,4 @@ Resources:
       LaunchTemplate:
         LaunchTemplateId: !Ref LaunchTemplate
         Version: !GetAtt LaunchTemplate.LatestVersionNumber
-      SubnetId: subnet-04652ef6aafce29d5 #change to Customer VPC Subnet (ALB's subnet)
+      # SubnetId: CUSTOMER-ALB-SubnetId - uncomment and change to Customer VPC Subnet (ALB's subnet)
