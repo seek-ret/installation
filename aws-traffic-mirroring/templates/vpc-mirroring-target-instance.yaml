@@ -16,7 +16,31 @@ Parameters:
   CustomerSubnetId:
     Type: String
     Description: The subnet Id of the Customer's ALB
-
+  BucketS3Url:
+    Type: String
+    Description: Bucket S3 URL
+    Default: s3.s3URL=https://s3.amazonaws.com
+  BucketName:
+    Type: String
+    Description: Bucket name
+  BucketAccessKey:
+    Type: String
+    Description: Access key for the bucket
+  BucketSecretKey:
+    Type: String
+    Description: Secret key for the bucket
+  BucketFolderName:
+    Type: String
+    Description: Folder name to store the pcaps in the bucket
+    Default: default/captures
+  RotationSeconds:
+    Type: String
+    Description: Interval to rotate files in the sniffer
+    Default: 600
+  MaxFileSize:
+    Type: String
+    Description: Max file size before creating a new pcap file
+    Default: 50
 
 Resources:
   SecurityGroup:
@@ -60,23 +84,19 @@ Resources:
       AWS::CloudFormation::Init:
         config:
           files:
-            /home/seekret-conf.json:
-              content: !Join [ "", [
-                  "ACCESS_KEY=\n",
-                  "SECRET_ACCESS_KEY=\n",
-                  "S3_URL=\n",
-                  "BUCKET_NAME=\n",
-                  "FOLDER_NAME=\n",
-                  "REGION=\n",
-                  "BPF_FILTER=\n",
-                  "MAX_FILE_SIZE=\n",
-                  "MAX_BANDWIDTH=\n",
-                  "PREFIX=\n",
-                  "ROTATION_SECONDS=\n"
-              ] ]
+            /home/seekret-conf.env:
+              content: !Sub
+                  ACCESS_KEY=${BucketAccessKey}
+                  SECRET_ACCESS_KEY=${BucketSecretKey}
+                  S3_URL=${BucketS3Url}
+                  BUCKET_NAME=${BucketName}
+                  FOLDER_NAME=${BucketFolderName}
+                  BPF_FILTER=tcp and port 4789
+                  MAX_FILE_SIZE=${MaxFileSize}
+                  ROTATION_SECONDS=${RotationSeconds}
               mode: "000644"
-              owner: "root"
-              group: "root"
+              owner: "ec2-user"
+              group: "ec2-user"
     Properties:
       LaunchTemplateName: !Sub ${AWS::StackName}-lt
       LaunchTemplateData:
@@ -99,35 +119,28 @@ Resources:
             Tags:
               - { Key: Name, Value: !Sub '${AWS::StackName}-volume' }
         UserData:
-          Fn::Base64: |
+          Fn::Base64: !Sub |
             #!/bin/bash
             set -o xtrace
             sudo yum update -y
 
-            sudo /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource Instance --region ${AWS::Region}
+            sudo /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource LaunchTemplate --region ${AWS::Region}
 
             # Setup SSM for remote management
             yum install -y amazon-ssm-agent
             systemctl start amazon-ssm-agent
 
             # install  docker
-            sudo amazon-linux-extras install docker
+            sudo amazon-linux-extras install docker -y
+            sudo usermod -aG docker ec2-user
+            sudo usermod -aG docker ssm-user
 
             # start docker service and add to start on boot
-            sudo systemctl enable docker.service
-            sudo systemctl enable containerd.service
-            sudo service docker start
-
-            # enable running docker not as sudo
-            sudo usermod -a -G docker ec2-user
-            sudo usermod -a -G docker ssm-user
-
-            # create VXLAN interface
-            # sudo ip link add capture0 type vxlan id 12345 local 10.0.0.83 remote 10.0.0.84 dev eth0 dstport 4789
-            # sudo ip link set capture0 up
+            sudo systemctl start docker
+            sudo systemctl enable docker
 
             # run sniffer container
-            docker run  -d --net host --log-driver json-file --log-opt max-size=10m --log-opt max-file=5 --restart unless-stopped seekret/sniffer:1
+            docker run -d --net host --env-file /home/seekret-conf.env --log-driver json-file --log-opt max-size=10m --log-opt max-file=5 --restart unless-stopped seekret/sniffer:1
 
   Instance:
     Type: "AWS::EC2::Instance"
