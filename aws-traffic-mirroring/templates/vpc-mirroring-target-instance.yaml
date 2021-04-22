@@ -5,6 +5,18 @@ Parameters:
   LatestAmiId:
     Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
     Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
+  CustomerVpcId:
+    Type: String
+    Description: The ID of the Customer's VPC
+  SourceVpcIpv4Cidr:
+    Type: String
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
+    Description: Customer VPC's Cidr
+    ConstraintDescription: 'must be a valid CIDR range of the form x.x.x.x/x.'
+  CustomerSubnetId:
+    Type: String
+    Description: The subnet Id of the Customer's ALB
+
 
 Resources:
   SecurityGroup:
@@ -12,10 +24,9 @@ Resources:
     Properties:
       GroupDescription: !Sub Security group for ${AWS::StackName} instance
       GroupName: !Sub ${AWS::StackName}-sg
-      # VpcId: CUSTOMER-VpcId - uncomment and change to customer's vpc ID
+      VpcId: !Ref CustomerVpcId
       SecurityGroupIngress:
-        #uncomment next line and change CUSTOMER-VpcIpv4Cidr to vpc ipv4Cidr
-        #- { IpProtocol: udp, FromPort: 4789, ToPort: 4789, CidrIp: CUSTOMER-VpcIpv4Cidr, Description: 'Allow mirrored traffic from VPC' }
+        - { IpProtocol: udp, FromPort: 4789, ToPort: 4789, CidrIp: !Ref SourceVpcIpv4Cidr, Description: 'Allow mirrored traffic from VPC' }
       Tags:
         - { Key: Name, Value: !Sub '${AWS::StackName}-sg' }
 
@@ -84,4 +95,4 @@ Resources:
       LaunchTemplate:
         LaunchTemplateId: !Ref LaunchTemplate
         Version: !GetAtt LaunchTemplate.LatestVersionNumber
-      # SubnetId: CUSTOMER-ALB-SubnetId - uncomment and change to Customer VPC Subnet (ALB's subnet)
+      SubnetId: !Ref CustomerSubnetId
