@@ -2,15 +2,19 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: VPC Traffic Mirroring configuration between Application and Seekret Sniffer
 
 Parameters:
+  SourceVpcIpv4Cidr:
+    Type: String
+    AllowedPattern : "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
+    Description: Customer VPC's Cidr
+    ConstraintDescription : 'must be a valid CIDR range of the form x.x.x.x/x.'
+
   SourceEni:
     Type: String
     Description: The ID of the Customer's Application ENI to mirror.
-    #Default: <Source ENI>
 
   TargetEni:
     Type: String
     Description: The ID of the Seekret Sniffer's ENI to mirror to.
-    #Default: <Target ENI>
 
 Resources:
   MirrorTarget:
@@ -130,14 +134,14 @@ Resources:
     Type: AWS::EC2::TrafficMirrorFilterRule
     Properties:
       Description: Rule to reject ALB <> Target TCP ingress from VPC (drop target responses)
-      DestinationCidrBlock: !ImportValue CUSTOMER-VpcIpv4Cidr
+      DestinationCidrBlock: !Ref SourceVpcIpv4Cidr
       DestinationPortRange:
         FromPort: 0
         ToPort: 65535
       Protocol: 6 # tcp
       RuleAction: reject
       RuleNumber: 2
-      SourceCidrBlock: !ImportValue CUSTOMER-VpcIpv4Cidr
+      SourceCidrBlock: !Ref SourceVpcIpv4Cidr
       SourcePortRange:
         FromPort: 0
         ToPort: 65535
@@ -148,19 +152,19 @@ Resources:
     Type: AWS::EC2::TrafficMirrorFilterRule
     Properties:
       Description: Rule to reject ALB <> Target TCP egress to VPC (drop target requests)
-      DestinationCidrBlock: !ImportValue CUSTOMER-VpcIpv4Cidr
+      DestinationCidrBlock: !Ref SourceVpcIpv4Cidr
       DestinationPortRange:
         FromPort: 0
         ToPort: 65535
       Protocol: 6 # tcp
       RuleAction: reject
       RuleNumber: 2
-      SourceCidrBlock: !ImportValue CUSTOMER-VpcIpv4Cidr
+      SourceCidrBlock: !Ref SourceVpcIpv4Cidr
       SourcePortRange:
         FromPort: 0
         ToPort: 65535
       TrafficDirection: egress
-      TrafficMirrorFilterId: !Ref MirrorAlbClientTraffic
+      TrafficMirrorFilterId: !Ref SourceVpcIpv4Cidr
 
   ####
   # Filter 3: Mirror ALB <> Target traffic for ENIs of an internet-facing Application Load Balancer
@@ -176,14 +180,14 @@ Resources:
     Type: AWS::EC2::TrafficMirrorFilterRule
     Properties:
       Description: Accept TCP ingress from VPC (target responses).
-      DestinationCidrBlock: !ImportValue CUSTOMER-VpcIpv4Cidr
+      DestinationCidrBlock: !Ref SourceVpcIpv4Cidr
       DestinationPortRange:
         FromPort: 0
         ToPort: 65535
       Protocol: 6 # tcp
       RuleAction: accept
       RuleNumber: 1
-      SourceCidrBlock: !ImportValue CUSTOMER-VpcIpv4Cidr
+      SourceCidrBlock: !Ref SourceVpcIpv4Cidr
       SourcePortRange:
         FromPort: 0
         ToPort: 65535
@@ -194,14 +198,14 @@ Resources:
     Type: AWS::EC2::TrafficMirrorFilterRule
     Properties:
       Description: Accept TCP egress to VPC (target requests).
-      DestinationCidrBlock: !ImportValue CUSTOMER-VpcIpv4Cidr
+      DestinationCidrBlock: !Ref SourceVpcIpv4Cidr
       DestinationPortRange:
         FromPort: 0
         ToPort: 65535
       Protocol: 6 # tcp
       RuleAction: accept
       RuleNumber: 1
-      SourceCidrBlock: 10.0.0.0/16
+      SourceCidrBlock: !Ref SourceVpcIpv4Cidr
       SourcePortRange:
         FromPort: 0
         ToPort: 65535
