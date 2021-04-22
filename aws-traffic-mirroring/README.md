@@ -43,23 +43,39 @@ Also, the `Makefile` is optimized for deployments made on `us-east-1` region (bu
 
 Deploy the target instance stack by running
 
+You'll need to provide parameter values for the next parameters
+
+```
+CustomerVpcId - VPC Id where your ALB resides
+SourceVpcIpv4Cidr - VPC IPv4 CIDR
+CustomerSubnetId - Subnet of the availability zone of the ALB
+```
+
 ```bash
-make deploy-vpc-mirroring-target-instance
+aws --profile default --region us-east-1 cloudformation deploy --stack-name seekret-sniffer \ 
+--tags Deployment=seekret-target-sniffer --template-file templates/vpc-mirroring-target-instance.yaml --capabilities CAPABILITY_NAMED_IAM \ 
+--parameter-overrides CustomerVpcId=<VPC_ID> SourceVpcIpv4Cidr=<VPC_Cidr> CustomerSubnetId=<Subnet_ID>
 ```
 
 Once complete, you can use AWS Systems Manager Session Manager (SSM) to access the EC2 instance that receives the mirrored network traffic.
 
 ### VPC Mirroring
 
-You'll need to make the following changes to the stack template prior to deployment:
+You'll need to provide parameter values for the next parameters
 
 * Find the ID of the ENI you would like to monitor and enter it to the `Default` field of `SourceEni` parameter.
 * Find the ID of the ENI of the target instance and enter it into the `Default` field of `TargetEni` parameter.
 
-Once done, you can deploy the VPC Traffic Mirroring configuration by running
+```
+SourceEni - ID of the ENI you would like to monitor (ALB's eni)
+TargetEni - ID of the ENI of the target instance (Seekret sniffer)
+SourceVpcIpv4Cidr - VPC IPv4 CIDR
+```
 
 ```bash
-make deploy-vpc-mirroring
+aws --profile default --region us-east-1 cloudformation deploy --stack-name seekret-vpc-mirroring \ 
+--tags Deployment=seekret-vpc-traffic-mirroring --template-file templates/vpc-mirroring.yaml --capabilities CAPABILITY_NAMED_IAM \ 
+--parameter-overrides SourceEni=<Source_Eni_ID> TargetEni=<Targer_Eni_ID> SourceVpcIpv4Cidr=<VPC_Cidr>
 ```
 
 ## Additional Features
