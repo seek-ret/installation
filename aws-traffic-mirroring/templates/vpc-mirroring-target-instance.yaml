@@ -73,7 +73,7 @@ Resources:
                   "MAX_BANDWIDTH=\n",
                   "PREFIX=\n",
                   "ROTATION_SECONDS=\n"
-              ]]
+              ] ]
               mode: "000644"
               owner: "root"
               group: "root"
@@ -104,18 +104,23 @@ Resources:
             set -o xtrace
             sudo yum update -y
 
-            /opt/aws/bin/cfn-init -v --stack !Ref '${AWS::StackName}' --resource LaunchTemplate --region !Ref '${AWS::Region}'
+            sudo /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource Instance --region ${AWS::Region}
 
             # Setup SSM for remote management
             yum install -y amazon-ssm-agent
             systemctl start amazon-ssm-agent
 
-            # install and configure docker
+            # install  docker
             sudo amazon-linux-extras install docker
+
+            # start docker service and add to start on boot
             sudo systemctl enable docker.service
             sudo systemctl enable containerd.service
             sudo service docker start
+
+            # enable running docker not as sudo
             sudo usermod -a -G docker ec2-user
+            sudo usermod -a -G docker ssm-user
 
             # create VXLAN interface
             # sudo ip link add capture0 type vxlan id 12345 local 10.0.0.83 remote 10.0.0.84 dev eth0 dstport 4789
