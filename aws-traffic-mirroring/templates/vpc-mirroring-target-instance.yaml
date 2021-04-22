@@ -85,7 +85,7 @@ Resources:
         config:
           files:
             /home/seekret-conf.env:
-              content: !Sub
+              content: !Sub |
                   ACCESS_KEY=${BucketAccessKey}
                   SECRET_ACCESS_KEY=${BucketSecretKey}
                   S3_URL=${BucketS3Url}
