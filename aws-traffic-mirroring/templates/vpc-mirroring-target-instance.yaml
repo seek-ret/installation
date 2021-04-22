@@ -56,6 +56,27 @@ Resources:
 
   LaunchTemplate:
     Type: "AWS::EC2::LaunchTemplate"
+    Metadata:
+      AWS::CloudFormation::Init:
+        config:
+          files:
+            /home/seekret-conf.json:
+              content: !Join [ "", [
+                  "ACCESS_KEY=\n",
+                  "SECRET_ACCESS_KEY=\n",
+                  "S3_URL=\n",
+                  "BUCKET_NAME=\n",
+                  "FOLDER_NAME=\n",
+                  "REGION=\n",
+                  "BPF_FILTER=\n",
+                  "MAX_FILE_SIZE=\n",
+                  "MAX_BANDWIDTH=\n",
+                  "PREFIX=\n",
+                  "ROTATION_SECONDS=\n"
+              ]]
+              mode: "000644"
+              owner: "root"
+              group: "root"
     Properties:
       LaunchTemplateName: !Sub ${AWS::StackName}-lt
       LaunchTemplateData:
@@ -81,13 +102,27 @@ Resources:
           Fn::Base64: |
             #!/bin/bash
             set -o xtrace
+            sudo yum update -y
+
+            /opt/aws/bin/cfn-init -v --stack !Ref '${AWS::StackName}' --resource LaunchTemplate --region !Ref '${AWS::Region}'
 
             # Setup SSM for remote management
             yum install -y amazon-ssm-agent
             systemctl start amazon-ssm-agent
 
-            # Setup tcpdump
-            yum install -y tcpdump
+            # install and configure docker
+            sudo amazon-linux-extras install docker
+            sudo systemctl enable docker.service
+            sudo systemctl enable containerd.service
+            sudo service docker start
+            sudo usermod -a -G docker ec2-user
+
+            # create VXLAN interface
+            # sudo ip link add capture0 type vxlan id 12345 local 10.0.0.83 remote 10.0.0.84 dev eth0 dstport 4789
+            # sudo ip link set capture0 up
+
+            # run sniffer container
+            docker run  -d --net host --log-driver json-file --log-opt max-size=10m --log-opt max-file=5 --restart unless-stopped seekret/sniffer:1
 
   Instance:
     Type: "AWS::EC2::Instance"
