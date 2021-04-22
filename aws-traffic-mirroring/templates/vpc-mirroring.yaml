@@ -164,7 +164,7 @@ Resources:
         FromPort: 0
         ToPort: 65535
       TrafficDirection: egress
-      TrafficMirrorFilterId: !Ref SourceVpcIpv4Cidr
+      TrafficMirrorFilterId: !Ref MirrorAlbClientTraffic
 
   ####
   # Filter 3: Mirror ALB <> Target traffic for ENIs of an internet-facing Application Load Balancer
