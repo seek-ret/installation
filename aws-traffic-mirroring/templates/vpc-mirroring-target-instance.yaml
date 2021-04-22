@@ -19,7 +19,7 @@ Parameters:
   BucketS3Url:
     Type: String
     Description: Bucket S3 URL
-    Default: s3.s3URL=https://s3.amazonaws.com
+    Default: https://s3.amazonaws.com
   BucketName:
     Type: String
     Description: Bucket name
