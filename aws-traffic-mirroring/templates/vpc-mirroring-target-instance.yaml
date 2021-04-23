@@ -128,8 +128,8 @@ Resources:
             sudo /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource LaunchTemplate --region ${AWS::Region}
 
             # Setup SSM for remote management
-            yum install -y amazon-ssm-agent
-            systemctl start amazon-ssm-agent
+            sudo yum install -y amazon-ssm-agent
+            sudo systemctl start amazon-ssm-agent
 
             #setup traffic mirroring network interface
             sudo ip link add capture0 type vxlan id 4058602 local 10.0.0.83 remote 10.0.0.84 dev eth1 dstport 4789
