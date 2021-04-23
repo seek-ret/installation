@@ -16,6 +16,10 @@ Parameters:
   CustomerSubnetId:
     Type: String
     Description: The subnet Id of the Customer's ALB
+  SnifferVersion:
+    Type: String
+    Description: Seekret Sniffer Version
+    Default: 1
   BucketS3Url:
     Type: String
     Description: Bucket S3 URL
@@ -34,11 +38,11 @@ Parameters:
     Description: Folder name to store the pcaps in the bucket
     Default: default/captures
   RotationSeconds:
-    Type: String
+    Type: Number
     Description: Interval to rotate files in the sniffer
     Default: 600
   MaxFileSize:
-    Type: String
+    Type: Number
     Description: Max file size (in MBs) before creating a new pcap file
     Default: 50
 
@@ -146,7 +150,7 @@ Resources:
             sudo systemctl enable docker
 
             # run sniffer container
-            docker run -d --net host --env-file /home/seekret-conf.env --log-driver json-file --log-opt max-size=10m --log-opt max-file=5 --restart unless-stopped seekret/sniffer:1
+            docker run -d --net host --env-file /home/seekret-conf.env --log-driver json-file --log-opt max-size=10m --log-opt max-file=5 --restart unless-stopped seekret/sniffer:${SnifferVersion}
 
   Instance:
     Type: "AWS::EC2::Instance"
