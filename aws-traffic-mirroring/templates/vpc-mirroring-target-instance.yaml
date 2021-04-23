@@ -39,7 +39,7 @@ Parameters:
     Default: 600
   MaxFileSize:
     Type: String
-    Description: Max file size before creating a new pcap file
+    Description: Max file size (in MBs) before creating a new pcap file
     Default: 50
 
 Resources:
