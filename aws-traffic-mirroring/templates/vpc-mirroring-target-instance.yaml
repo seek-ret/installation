@@ -91,7 +91,7 @@ Resources:
                   S3_URL=${BucketS3Url}
                   BUCKET_NAME=${BucketName}
                   FOLDER_NAME=${BucketFolderName}
-                  BPF_FILTER=tcp and port 4789
+                  BPF_FILTER=udp and port 4789
                   MAX_FILE_SIZE=${MaxFileSize}
                   ROTATION_SECONDS=${RotationSeconds}
               mode: "000644"

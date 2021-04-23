@@ -49,6 +49,9 @@ You'll need to provide parameter values for the next parameters
 CustomerVpcId - VPC Id where your ALB resides
 SourceVpcIpv4Cidr - VPC IPv4 CIDR
 CustomerSubnetId - Subnet of the availability zone of the ALB
+BucketName - Name of the S3 bucket
+BucketAccessKey - Access key for the bucket
+BucketSecretKey - Secret key for the bucket
 ```
 
 ```bash
@@ -95,9 +98,9 @@ For supported ALBs, the VPC Mirroring template includes two mirror filters to mi
 
 Execute the following commands to clean up AWS resources:
 
-```
-make delete-vpc-mirroring-target-instance
-make delete-vpc-mirroring
+```bash
+aws cloudformation delete-stack --stack-name seekret-vpc-mirroring
+aws cloudformation delete-stack --stack-name seekret-sniffer
 ```
 
 ## Sources, References & Additional Material
