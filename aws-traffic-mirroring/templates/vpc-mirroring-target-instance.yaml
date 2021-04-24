@@ -1,0 +1,161 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Seekret EC2 Instance that acts as a VPC Traffic Mirroring Target
+
+Parameters:
+  LatestAmiId:
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
+  CustomerVpcId:
+    Type: String
+    Description: The ID of the Customer's VPC
+  SourceVpcIpv4Cidr:
+    Type: String
+    AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
+    Description: Customer VPC's Cidr
+    ConstraintDescription: 'must be a valid CIDR range of the form x.x.x.x/x.'
+  CustomerSubnetId:
+    Type: String
+    Description: The subnet Id of the Customer's ALB
+  SnifferVersion:
+    Type: String
+    Description: Seekret Sniffer Version
+    Default: 1
+  BucketS3Url:
+    Type: String
+    Description: Bucket S3 URL
+    Default: https://s3.amazonaws.com
+  BucketName:
+    Type: String
+    Description: Bucket name
+  BucketAccessKey:
+    Type: String
+    Description: Access key for the bucket
+  BucketSecretKey:
+    Type: String
+    Description: Secret key for the bucket
+  BucketFolderName:
+    Type: String
+    Description: Folder name to store the pcaps in the bucket
+    Default: default/captures
+  RotationSeconds:
+    Type: Number
+    Description: Interval to rotate files in the sniffer
+    Default: 600
+  MaxFileSize:
+    Type: Number
+    Description: Max file size (in MBs) before creating a new pcap file
+    Default: 50
+
+Resources:
+  SecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: !Sub Security group for ${AWS::StackName} instance
+      GroupName: !Sub ${AWS::StackName}-sg
+      VpcId: !Ref CustomerVpcId
+      SecurityGroupIngress:
+        - { IpProtocol: udp, FromPort: 4789, ToPort: 4789, CidrIp: !Ref SourceVpcIpv4Cidr, Description: 'Allow mirrored traffic from VPC' }
+      Tags:
+        - { Key: Name, Value: !Sub '${AWS::StackName}-sg' }
+
+  Role:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      Path: /
+      RoleName: !Sub ${AWS::StackName}-role
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+
+  RoleProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref Role
+      InstanceProfileName: !Sub '${AWS::StackName}-profile'
+
+  LaunchTemplate:
+    Type: "AWS::EC2::LaunchTemplate"
+    Metadata:
+      AWS::CloudFormation::Init:
+        config:
+          files:
+            /home/seekret-conf.env:
+              content: !Sub |
+                  ACCESS_KEY=${BucketAccessKey}
+                  SECRET_ACCESS_KEY=${BucketSecretKey}
+                  S3_URL=${BucketS3Url}
+                  BUCKET_NAME=${BucketName}
+                  FOLDER_NAME=${BucketFolderName}
+                  BPF_FILTER=udp and port 4789
+                  MAX_FILE_SIZE=${MaxFileSize}
+                  ROTATION_SECONDS=${RotationSeconds}
+                  INTERFACE=capture0
+              mode: "000644"
+              owner: "ec2-user"
+              group: "ec2-user"
+    Properties:
+      LaunchTemplateName: !Sub ${AWS::StackName}-lt
+      LaunchTemplateData:
+        EbsOptimized: true
+        IamInstanceProfile:
+          Arn: !GetAtt RoleProfile.Arn
+        ImageId: !Ref LatestAmiId
+        InstanceMarketOptions:
+          MarketType: spot
+          SpotOptions:
+            SpotInstanceType: one-time
+        InstanceType: m5.large
+        SecurityGroupIds:
+          - !Ref SecurityGroup
+        TagSpecifications:
+          - ResourceType: instance
+            Tags:
+              - { Key: Name, Value: !Sub '${AWS::StackName}' }
+          - ResourceType: volume
+            Tags:
+              - { Key: Name, Value: !Sub '${AWS::StackName}-volume' }
+        UserData:
+          Fn::Base64: !Sub |
+            #!/bin/bash
+            set -o xtrace
+            sudo yum update -y
+
+            sudo /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource LaunchTemplate --region ${AWS::Region}
+
+            # Setup SSM for remote management
+            sudo yum install -y amazon-ssm-agent
+            sudo systemctl start amazon-ssm-agent
+
+            #setup traffic mirroring network interface
+            sudo ip link add capture0 type vxlan id 4058602 local 10.0.0.83 remote 10.0.0.84 dev eth1 dstport 4789
+            sudo ip link set capture0 up
+            sudo sysctl net.ipv6.conf.capture0.disable_ipv6=1
+
+            # install  docker
+            sudo amazon-linux-extras install docker -y
+            sudo usermod -aG docker ec2-user
+            sudo usermod -aG docker ssm-user
+
+            # start docker service and add to start on boot
+            sudo systemctl start docker
+            sudo systemctl enable docker
+
+            # run sniffer container
+            docker run -d --net host --env-file /home/seekret-conf.env --log-driver json-file --log-opt max-size=10m --log-opt max-file=5 --restart unless-stopped seekret/sniffer:${SnifferVersion}
+
+  Instance:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      LaunchTemplate:
+        LaunchTemplateId: !Ref LaunchTemplate
+        Version: !GetAtt LaunchTemplate.LatestVersionNumber
+      SubnetId: !Ref CustomerSubnetId

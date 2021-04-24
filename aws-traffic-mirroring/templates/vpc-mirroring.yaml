@@ -1,0 +1,213 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: VPC Traffic Mirroring configuration between Application and Seekret Sniffer
+
+Parameters:
+  SourceVpcIpv4Cidr:
+    Type: String
+    AllowedPattern : "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
+    Description: Customer VPC's Cidr
+    ConstraintDescription : 'must be a valid CIDR range of the form x.x.x.x/x.'
+
+  SourceEni:
+    Type: String
+    Description: The ID of the Customer's Application ENI to mirror.
+
+  TargetEni:
+    Type: String
+    Description: The ID of the Seekret Sniffer's ENI to mirror to.
+
+Resources:
+  MirrorTarget:
+    Type: AWS::EC2::TrafficMirrorTarget
+    Properties:
+      Description: !Sub Mirror target for ${TargetEni}
+      NetworkInterfaceId: !Ref TargetEni
+      Tags:
+        - { Key: Name, Value: !Sub '${AWS::StackName}-target' }
+
+  MirrorSession:
+    Type: AWS::EC2::TrafficMirrorSession
+    Properties:
+      Description: !Sub Mirror traffic from ${SourceEni} to ${TargetEni}
+      NetworkInterfaceId: !Ref SourceEni
+      SessionNumber: 1
+      Tags:
+        - { Key: Name, Value: !Sub '${AWS::StackName}-session' }
+      TrafficMirrorFilterId: !Ref MirrorAlbTargetTraffic
+      TrafficMirrorTargetId: !Ref MirrorTarget
+      VirtualNetworkId: 12345
+
+  ####
+  # Filter 1: Mirror ALL TCP traffic.
+  ####
+  MirrorAllTraffic:
+    Type: AWS::EC2::TrafficMirrorFilter
+    Properties:
+      Description: Mirror ALL TCP traffic.
+      Tags:
+        - { Key: Name, Value: !Sub '${AWS::StackName}-filter-all-traffic' }
+
+  MirrorAllTrafficTcpIngress:
+    Type: AWS::EC2::TrafficMirrorFilterRule
+    Properties:
+      Description: Mirror all TCP ingress traffic.
+      DestinationCidrBlock: 0.0.0.0/0
+      DestinationPortRange:
+        FromPort: 0
+        ToPort: 65535
+      Protocol: 6 # tcp
+      RuleAction: accept
+      RuleNumber: 100
+      SourceCidrBlock: 0.0.0.0/0
+      SourcePortRange:
+        FromPort: 0
+        ToPort: 65535
+      TrafficDirection: ingress
+      TrafficMirrorFilterId: !Ref MirrorAllTraffic
+
+  MirrorAllTrafficTcpEgress:
+    Type: AWS::EC2::TrafficMirrorFilterRule
+    Properties:
+      Description: Mirror all TCP egress traffic.
+      DestinationCidrBlock: 0.0.0.0/0
+      DestinationPortRange:
+        FromPort: 0
+        ToPort: 65535
+      Protocol: 6 # tcp
+      RuleAction: accept
+      RuleNumber: 100
+      SourceCidrBlock: 0.0.0.0/0
+      SourcePortRange:
+        FromPort: 0
+        ToPort: 65535
+      TrafficDirection: egress
+      TrafficMirrorFilterId: !Ref MirrorAllTraffic
+
+
+  ####
+  # Filter 2: Mirror Client <> ALB traffic for ENIs of an Application Load Balancer
+  ####
+  MirrorAlbClientTraffic:
+    Type: AWS::EC2::TrafficMirrorFilter
+    Properties:
+      Description: Mirror Client <> ALB traffic for ENIs of an Application Load Balancer
+      Tags:
+        - { Key: Name, Value: !Sub '${AWS::StackName}-filter-alb-client' }
+
+  ALBClientRuleTCPIngress:
+    Type: AWS::EC2::TrafficMirrorFilterRule
+    Properties:
+      Description: Base rule to accept all TCP ingress traffic.
+      DestinationCidrBlock: 0.0.0.0/0
+      DestinationPortRange:
+        FromPort: 0
+        ToPort: 65535
+      Protocol: 6 # tcp
+      RuleAction: accept
+      RuleNumber: 100
+      SourceCidrBlock: 0.0.0.0/0
+      SourcePortRange:
+        FromPort: 0
+        ToPort: 65535
+      TrafficDirection: ingress
+      TrafficMirrorFilterId: !Ref MirrorAlbClientTraffic
+
+  ALBClientRuleTCPEgress:
+    Type: AWS::EC2::TrafficMirrorFilterRule
+    Properties:
+      Description: Base rule to accept all TCP egress traffic
+      DestinationCidrBlock: 0.0.0.0/0
+      DestinationPortRange:
+        FromPort: 0
+        ToPort: 65535
+      Protocol: 6 # tcp
+      RuleAction: accept
+      RuleNumber: 100
+      SourceCidrBlock: 0.0.0.0/0
+      SourcePortRange:
+        FromPort: 0
+        ToPort: 65535
+      TrafficDirection: egress
+      TrafficMirrorFilterId: !Ref MirrorAlbClientTraffic
+
+  ALBClientRuleTCPIngressRejectInternal:
+    Type: AWS::EC2::TrafficMirrorFilterRule
+    Properties:
+      Description: Rule to reject ALB <> Target TCP ingress from VPC (drop target responses)
+      DestinationCidrBlock: !Ref SourceVpcIpv4Cidr
+      DestinationPortRange:
+        FromPort: 0
+        ToPort: 65535
+      Protocol: 6 # tcp
+      RuleAction: reject
+      RuleNumber: 2
+      SourceCidrBlock: !Ref SourceVpcIpv4Cidr
+      SourcePortRange:
+        FromPort: 0
+        ToPort: 65535
+      TrafficDirection: ingress
+      TrafficMirrorFilterId: !Ref MirrorAlbClientTraffic
+
+  ALBClientRuleTCPEgressRejectInternal:
+    Type: AWS::EC2::TrafficMirrorFilterRule
+    Properties:
+      Description: Rule to reject ALB <> Target TCP egress to VPC (drop target requests)
+      DestinationCidrBlock: !Ref SourceVpcIpv4Cidr
+      DestinationPortRange:
+        FromPort: 0
+        ToPort: 65535
+      Protocol: 6 # tcp
+      RuleAction: reject
+      RuleNumber: 2
+      SourceCidrBlock: !Ref SourceVpcIpv4Cidr
+      SourcePortRange:
+        FromPort: 0
+        ToPort: 65535
+      TrafficDirection: egress
+      TrafficMirrorFilterId: !Ref MirrorAlbClientTraffic
+
+  ####
+  # Filter 3: Mirror ALB <> Target traffic for ENIs of an internet-facing Application Load Balancer
+  ####
+  MirrorAlbTargetTraffic:
+    Type: AWS::EC2::TrafficMirrorFilter
+    Properties:
+      Description: Mirror ALB <> Target traffic for ENIs of an internet-facing Application Load Balancer
+      Tags:
+        - { Key: Name, Value: !Sub '${AWS::StackName}-filter-alb-target' }
+
+  AlbTargetRuleAcceptTCPIngressFromTarget:
+    Type: AWS::EC2::TrafficMirrorFilterRule
+    Properties:
+      Description: Accept TCP ingress from VPC (target responses).
+      DestinationCidrBlock: !Ref SourceVpcIpv4Cidr
+      DestinationPortRange:
+        FromPort: 0
+        ToPort: 65535
+      Protocol: 6 # tcp
+      RuleAction: accept
+      RuleNumber: 1
+      SourceCidrBlock: !Ref SourceVpcIpv4Cidr
+      SourcePortRange:
+        FromPort: 0
+        ToPort: 65535
+      TrafficDirection: ingress
+      TrafficMirrorFilterId: !Ref MirrorAlbTargetTraffic
+
+  AlbTargetRuleAcceptTCPEgressToTarget:
+    Type: AWS::EC2::TrafficMirrorFilterRule
+    Properties:
+      Description: Accept TCP egress to VPC (target requests).
+      DestinationCidrBlock: !Ref SourceVpcIpv4Cidr
+      DestinationPortRange:
+        FromPort: 0
+        ToPort: 65535
+      Protocol: 6 # tcp
+      RuleAction: accept
+      RuleNumber: 1
+      SourceCidrBlock: !Ref SourceVpcIpv4Cidr
+      SourcePortRange:
+        FromPort: 0
+        ToPort: 65535
+      TrafficDirection: egress
+      TrafficMirrorFilterId: !Ref MirrorAlbTargetTraffic
