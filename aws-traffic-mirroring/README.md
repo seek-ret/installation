@@ -45,6 +45,8 @@ Deploy the target instance stack by running
 
 You'll need to provide parameter values for the next parameters
 
+_Required Parameters:_
+
 ```
 CustomerVpcId - VPC Id where your ALB resides
 SourceVpcIpv4Cidr - VPC IPv4 CIDR
@@ -53,6 +55,17 @@ BucketName - Name of the S3 bucket
 BucketAccessKey - Access key for the bucket
 BucketSecretKey - Secret key for the bucket
 ```
+
+_Optional Parameters:_
+
+```
+BucketS3Url - Bucket URL, e.g: https://storage.googleapis.com if you are using GCS
+RotationSeconds - Number of seconds between file rotations 
+MaxFileSize - Maximum pcap file size in MBs
+SnifferVersion - Seekret Sniffer container version 
+```
+
+If you use a different profile than `default` or a different region than `us-east-1` modify the next line accordingly
 
 ```bash
 aws --profile default --region us-east-1 cloudformation deploy --stack-name seekret-sniffer \ 
@@ -66,8 +79,8 @@ Once complete, you can use AWS Systems Manager Session Manager (SSM) to access t
 
 You'll need to provide parameter values for the next parameters
 
-* Find the ID of the ENI you would like to monitor and enter it to the `Default` field of `SourceEni` parameter.
-* Find the ID of the ENI of the target instance and enter it into the `Default` field of `TargetEni` parameter.
+* Find the ID of the ENI you would like to monitor and replace the `<Source_Eni_ID>` value.
+* Find the ID of the ENI of the target instance and replace the `<Target_Eni_ID>` value.
 
 ```
 SourceEni - ID of the ENI you would like to monitor (ALB's eni)
@@ -75,10 +88,12 @@ TargetEni - ID of the ENI of the target instance (Seekret sniffer)
 SourceVpcIpv4Cidr - VPC IPv4 CIDR
 ```
 
+If you use a different profile than `default` or a different region than `us-east-1` modify the next line accordingly
+
 ```bash
 aws --profile default --region us-east-1 cloudformation deploy --stack-name seekret-vpc-mirroring \ 
 --tags Deployment=seekret-vpc-traffic-mirroring --template-file templates/vpc-mirroring.yaml --capabilities CAPABILITY_NAMED_IAM \ 
---parameter-overrides SourceEni=<Source_Eni_ID> TargetEni=<Targer_Eni_ID> SourceVpcIpv4Cidr=<VPC_Cidr>
+--parameter-overrides SourceEni=<Source_Eni_ID> TargetEni=<Target_Eni_ID> SourceVpcIpv4Cidr=<VPC_Cidr>
 ```
 
 ## Additional Features
