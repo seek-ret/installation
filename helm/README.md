@@ -2,7 +2,7 @@ Seekret
 =======
 A Helm chart for Kubernetes
 
-Current chart version is `0.4.2`
+Current chart version is `1.0.0`
 
 ## License
 
@@ -23,7 +23,7 @@ Copyright 2019, Tumblr, Inc.
 #### HTTP traffic
 ```bash
  helm repo add seekret-repo 
- helm install seekret-sniffer seekret-repo/seekret --set s3.accessKey={ACCESS_KEY} --set s3.secretKey={SECRET_KEY} --set s3.bucketName={BUCKET_NAME} --set bpfFilter="tcp port [PORT_NUMBER]"
+ helm install seekret-sniffer seekret-repo/seekret --set bucket.provider={PROVIDER} --set bucket.accessKey={ACCESS_KEY} --set bucket.secretKey={SECRET_KEY} --set bucket.name={BUCKET_NAME} --set bpfFilter="tcp port [PORT_NUMBER]"
 ```
 
 #### HTTPS traffic
@@ -36,7 +36,7 @@ _The key is mounted by the proxy container and is used only to decrypt and re-en
 b. 
 ```bash
  helm repo add seekret-repo 
- helm install seekret-sniffer seekret-repo/seekret --set s3.accessKey={ACCESS_KEY} --set s3.secretKey={SECRET_KEY} --set s3.bucketName={BUCKET_NAME} --set tlsProxy.enabled=true --set tlsProxy.targetPort={PORT_NUMBER} 
+ helm install seekret-sniffer seekret-repo/seekret --set bucket.provider={PROVIDER} --set bucket.accessKey={ACCESS_KEY} --set bucket.secretKey={SECRET_KEY} --set bucket.name={BUCKET_NAME} --set tlsProxy.enabled=true --set tlsProxy.targetPort={PORT_NUMBER} 
 ```
 _Usually the tlsProxy.targetPort should be 443_
 
@@ -67,7 +67,7 @@ spec:
 
 ## Additional Optional Values
 
-Those values can be configured during installation using ``` --set [ParamName]=[VALUE] (e.g: --set s3.folderName=test/capture) ```
+Those values can be configured during installation using ``` --set [ParamName]=[VALUE] (e.g: --set bucket.folderName=test/capture) ```
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
@@ -78,14 +78,12 @@ Those values can be configured during installation using ``` --set [ParamName]=[
 | rotationSeconds | int | `600` | Number of seconds between file rotations |
 | bpfFilter | string | `"tcp and not tcp port 443"` | The bpf filter for the sniffer |
 | networkPolicy.enabled | bool | `false` | Whether to add a network policy |
-| s3.bucketName | string | `` | Bucket name for pcaps |
-| s3.folderName | string | `"default/captures"` | Folder for pcaps inside bucket |
-| s3.keyAuth | bool | `true` | if true, using HMAC key authentication, otherwise AWS role-based IAM access assumed |
-| s3.accessKey | string | `` | Access key for sniffer |
-| s3.secretKey | string | `` | Secret key for sniffer |
-| s3.s3URL | string | `"https://storage.googleapis.com"` | endpoint_url to allow accessing different buckets |
-| s3.region | string | `"us-east1"` | Default region of the target bucket |
-| s3.maxBandwidth | string | `` | Max bandwidth for uploading pcaps to the bucket. Defaults to "without limit" |
+| bucket.name | string | `` | Bucket name for pcaps |
+| bucket.folderName | string | `"default/captures"` | Folder for pcaps inside bucket |
+| bucket.keyAuth | bool | `true` | if true, using HMAC key authentication, otherwise AWS role-based IAM access assumed |
+| bucket.accessKey | string | `` | Access key for sniffer |
+| bucket.secretKey | string | `` | Secret key for sniffer |
+| bucket.provider | string | `gcs` | one of `gcs`, `s3`, `azure` |
 | httpProxyClient.enabled | bool | `false` | Whether to deploy Seekret's HTTP Proxy |
 | httpProxyClient.image | string | `"seekret/http-proxy-client:1"` | Docker image of the HTTP Proxy client |
 | httpProxyClient.target | string | `nil` | Target URL for the proxy. The value must include a schema ("http://") |

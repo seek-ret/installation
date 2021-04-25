@@ -55,7 +55,7 @@ ACCESS_KEY=$1
 SECRET_ACCESS_KEY=$2
 BUCKET_NAME=$3
 echo "Creating seekret's helm sniffer setup"
-run helm install seekret ${CURRENT_DIR}/../helm/seekret/ --set s3.accessKey=${ACCESS_KEY} --set s3.secretKey=${SECRET_ACCESS_KEY} --set s3.bucketName=${BUCKET_NAME}
+run helm install seekret ${CURRENT_DIR}/../helm/seekret/ --set bucket.provider=gcs --set bucket.accessKey=${ACCESS_KEY} --set bucket.secretKey=${SECRET_ACCESS_KEY} --set bucket.name=${BUCKET_NAME}
 cleanupOnError $?
 run kubectl wait --for=condition=available --timeout=60s deployment/seekret-sidecar-injector -n seekret-injector
 cleanupOnError $?
