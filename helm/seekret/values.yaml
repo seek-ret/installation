@@ -3,7 +3,8 @@
 # Declare variables to be passed into your templates.
 
 name: seekret-sidecar-injector
-image: seekret/sniffer:1
+image: seekret/sniffer:2
+
 # Injector values
 injector:
   annotationNamespace: injector.seekret.com
@@ -15,19 +16,12 @@ injector:
   customSidecarCa:
 
 # Sniffer values
-s3:
-  bucketName:
+bucket:
+  provider: gcs
+  name:
   folderName: default/captures
-  ## Default url to communicate with GCS buckets
-  s3URL: https://storage.googleapis.com
-  ## Use HMAC key auth instead of role based
-  keyAuth: true
-  ## Set accessKey, secretKey
   accessKey:
   secretKey:
-  ##default region for buckets
-  region: us-east1
-  maxBandwidth: ""
 
 
 rotationSeconds: 600

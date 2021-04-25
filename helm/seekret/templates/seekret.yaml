@@ -222,24 +222,16 @@ data:
     containers:
     - name: sniffer
       env:
-      - name: S3_URL
-        value: {{ .Values.s3.s3URL | quote }}
+      - name: STORAGE_PROVIDER
+        value: {{ .Values.bucket.provider | quote }}
       - name: BUCKET_NAME
-        value: {{required "A target bucket name is required!" .Values.s3.bucketName }}
+        value: {{required "A target bucket name is required!" .Values.bucket.name }}
       - name: FOLDER_NAME
-        value: {{ .Values.s3.folderName }}
-      {{ if .Values.s3.keyAuth }}
+        value: {{ .Values.bucket.folderName }}
       - name: ACCESS_KEY
-        value: {{required "An access key ID is required with keyAuth authentication!" .Values.s3.accessKey }}
+        value: {{required "An access key ID is required with keyAuth authentication!" .Values.bucket.accessKey }}
       - name: SECRET_ACCESS_KEY
-        value: {{required "A secret key is required with keyAuth authentication!" .Values.s3.secretKey }}
-      {{ end }}
-      {{ if ne (toString .Values.s3.maxBandwidth) "" }}
-      - name: MAX_BANDWIDTH
-        value: {{ .Values.s3.maxBandwidth }}
-      {{ end }}
-      - name: REGION
-        value: {{ .Values.s3.region }}
+        value: {{required "A secret key is required with keyAuth authentication!" .Values.bucket.secretKey }}
       - name: PREFIX
         valueFrom:
           fieldRef:
