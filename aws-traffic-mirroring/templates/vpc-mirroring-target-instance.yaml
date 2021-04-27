@@ -92,7 +92,7 @@ Resources:
               content: !Sub |
                   ACCESS_KEY=${BucketAccessKey}
                   SECRET_ACCESS_KEY=${BucketSecretKey}
-                  STORAGE_PROVIDER=${BucketProvider}
+                  S3_URL=${BucketS3Url}
                   BUCKET_NAME=${BucketName}
                   FOLDER_NAME=${BucketFolderName}
                   BPF_FILTER=udp and port 4789
@@ -136,7 +136,7 @@ Resources:
             sudo systemctl start amazon-ssm-agent
 
             #setup traffic mirroring network interface
-            eth=$(ls /sys/class/net | grep eth)
+            eth=$(route | grep default | awk '{print $8}')
             sudo ip link add capture0 type vxlan id 4058602 local 10.0.0.83 remote 10.0.0.84 dev ${eth} dstport 4789
             sudo ip link set capture0 up
             sudo sysctl net.ipv6.conf.capture0.disable_ipv6=1
