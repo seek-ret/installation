@@ -14,7 +14,7 @@ Copyright 2019, Tumblr, Inc.
 
 - kubectl
 - Helm v3 configured 
-- ACCESS_KEY, SECRET_KEY and BUCKET_NAME (should be provided by Seekret)
+- ACCESS_KEY, SECRET_KEY and BUCKET_NAME (supported buckets: GCS / S3 / Azure Blob)
 
 ## Deployment
 
