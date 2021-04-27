@@ -19,7 +19,7 @@ Parameters:
   SnifferVersion:
     Type: String
     Description: Seekret Sniffer Version
-    Default: 1
+    Default: 2
   BucketS3Url:
     Type: String
     Description: Bucket S3 URL
