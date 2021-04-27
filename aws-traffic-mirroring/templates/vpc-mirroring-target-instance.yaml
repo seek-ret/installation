@@ -136,7 +136,8 @@ Resources:
             sudo systemctl start amazon-ssm-agent
 
             #setup traffic mirroring network interface
-            sudo ip link add capture0 type vxlan id 4058602 local 10.0.0.83 remote 10.0.0.84 dev eth1 dstport 4789
+            eth=$(ls /sys/class/net | grep eth)
+            sudo ip link add capture0 type vxlan id 4058602 local 10.0.0.83 remote 10.0.0.84 dev ${eth} dstport 4789
             sudo ip link set capture0 up
             sudo sysctl net.ipv6.conf.capture0.disable_ipv6=1
 
