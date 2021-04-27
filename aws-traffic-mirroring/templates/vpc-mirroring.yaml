@@ -28,7 +28,7 @@ Resources:
   MirrorSession1:
     Type: AWS::EC2::TrafficMirrorSession
     Properties:
-      Description: Mirror traffic from !Select [0, !Ref SourceEni ] to ${TargetEni}
+      Description: Mirror traffic from !Select [0, !Ref SourceEniList ] to ${TargetEni}
       NetworkInterfaceId: !Select [0, !Ref SourceEniList ] # get the relevant element by index (zero-based) from SourceEniList
       SessionNumber: 1 # this should be unique for each MirrorSession object
       Tags:
@@ -40,7 +40,7 @@ Resources:
 #  MirrorSession2:
 #    Type: AWS::EC2::TrafficMirrorSession
 #    Properties:
-#      Description: Mirror traffic from !Select [1, !Ref SourceEni ] to ${TargetEni}
+#      Description: Mirror traffic from !Select [1, !Ref SourceEniList ] to ${TargetEni}
 #      NetworkInterfaceId: !Select [1, !Ref SourceEniList ] # get the relevant element by index (zero-based) from SourceEniList
 #      SessionNumber: 2 # this should be unique for each MirrorSession object
 #      Tags:

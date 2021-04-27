@@ -93,8 +93,8 @@ If you add more than 2 sources, you will need to copy-paste the entire block and
 #  MirrorSession2:
 #    Type: AWS::EC2::TrafficMirrorSession
 #    Properties:
-#      Description: Mirror traffic from !Select [1, !Ref SourceEni ] to ${TargetEni}
-#      NetworkInterfaceId: !Select [1, !Ref SourceEni ]
+#      Description: Mirror traffic from !Select [1, !Ref SourceEniList ] to ${TargetEni}
+#      NetworkInterfaceId: !Select [1, !Ref SourceEniList ]
 #      SessionNumber: 2
 #      Tags:
 #        - { Key: Name, Value: !Sub '${AWS::StackName}-session' }
