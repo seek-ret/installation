@@ -20,10 +20,10 @@ Parameters:
     Type: String
     Description: Seekret Sniffer Version
     Default: 2
-  BucketS3Url:
+  BucketProvider:
     Type: String
-    Description: Bucket S3 URL
-    Default: https://s3.amazonaws.com
+    Description: Bucket provider (aws / gcs / azure)
+    Default: aws
   BucketName:
     Type: String
     Description: Bucket name
@@ -92,7 +92,7 @@ Resources:
               content: !Sub |
                   ACCESS_KEY=${BucketAccessKey}
                   SECRET_ACCESS_KEY=${BucketSecretKey}
-                  S3_URL=${BucketS3Url}
+                  STORAGE_PROVIDER=${BucketProvider}
                   BUCKET_NAME=${BucketName}
                   FOLDER_NAME=${BucketFolderName}
                   BPF_FILTER=udp and port 4789
