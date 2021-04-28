@@ -8,9 +8,9 @@ Parameters:
     Description: Customer VPC's Cidr
     ConstraintDescription : 'must be a valid CIDR range of the form x.x.x.x/x.'
 
-  SourceEni:
-    Type: String
-    Description: The ID of the Customer's Application ENI to mirror.
+  SourceEniList:
+    Type: CommaDelimitedList
+    Description: The list of Customer's Application ENIs IDs to mirror.
 
   TargetEni:
     Type: String
@@ -25,17 +25,29 @@ Resources:
       Tags:
         - { Key: Name, Value: !Sub '${AWS::StackName}-target' }
 
-  MirrorSession:
+  MirrorSession1:
     Type: AWS::EC2::TrafficMirrorSession
     Properties:
-      Description: !Sub Mirror traffic from ${SourceEni} to ${TargetEni}
-      NetworkInterfaceId: !Ref SourceEni
-      SessionNumber: 1
+      Description: !Sub Mirror traffic from first mirror source to ${TargetEni}
+      NetworkInterfaceId: !Select [0, !Ref SourceEniList ] # get the relevant element by index (zero-based) from SourceEniList
+      SessionNumber: 1 # this should be unique for each MirrorSession object
       Tags:
         - { Key: Name, Value: !Sub '${AWS::StackName}-session' }
       TrafficMirrorFilterId: !Ref MirrorAlbTargetTraffic
       TrafficMirrorTargetId: !Ref MirrorTarget
       VirtualNetworkId: 12345
+
+#  MirrorSession2:
+#    Type: AWS::EC2::TrafficMirrorSession
+#    Properties:
+#      Description: !Sub Mirror traffic from second mirror source to ${TargetEni}
+#      NetworkInterfaceId: !Select [1, !Ref SourceEniList ] # get the relevant element by index (zero-based) from SourceEniList
+#      SessionNumber: 2 # this should be unique for each MirrorSession object
+#      Tags:
+#        - { Key: Name, Value: !Sub '${AWS::StackName}-session' }
+#      TrafficMirrorFilterId: !Ref MirrorAlbTargetTraffic
+#      TrafficMirrorTargetId: !Ref MirrorTarget
+#      VirtualNetworkId: 12345
 
   ####
   # Filter 1: Mirror ALL TCP traffic.

@@ -79,13 +79,28 @@ Once complete, you can use AWS Systems Manager Session Manager (SSM) to access t
 
 You'll need to provide parameter values for the next parameters
 
-* Find the ID of the ENI you would like to monitor and replace the `<Source_Eni_ID>` value.
-* Find the ID of the ENI of the target instance and replace the `<Target_Eni_ID>` value.
-
 ```
-SourceEni - ID of the ENI you would like to monitor (ALB's eni)
+SourceEniList - The list (comma delimited) of Customer's Application ENIs IDs to mirror.
 TargetEni - ID of the ENI of the target instance (Seekret sniffer)
 SourceVpcIpv4Cidr - VPC IPv4 CIDR
+```
+
+If you mirror more than one source ENI (2 elements in `SourceEniList`), uncomment MirrorSession2 in `vpc-mirroring.yaml`
+
+If you add more than 2 sources, you will need to copy-paste the entire block and change some parameters (see the inline comments within the  `MirrorSession` resource in `vpc-mirroring.yaml` file)
+
+```
+#  MirrorSession2:
+#    Type: AWS::EC2::TrafficMirrorSession
+#    Properties:
+#      Description: Mirror traffic from !Select [1, !Ref SourceEniList ] to ${TargetEni}
+#      NetworkInterfaceId: !Select [1, !Ref SourceEniList ]
+#      SessionNumber: 2
+#      Tags:
+#        - { Key: Name, Value: !Sub '${AWS::StackName}-session' }
+#      TrafficMirrorFilterId: !Ref MirrorAlbTargetTraffic
+#      TrafficMirrorTargetId: !Ref MirrorTarget
+#      VirtualNetworkId: 12346
 ```
 
 If you use a different profile than `default` or a different region than `us-east-1` modify the next line accordingly
@@ -93,7 +108,7 @@ If you use a different profile than `default` or a different region than `us-eas
 ```bash
 aws --profile default --region us-east-1 cloudformation deploy --stack-name seekret-vpc-mirroring \ 
 --tags Deployment=seekret-vpc-traffic-mirroring --template-file templates/vpc-mirroring.yaml --capabilities CAPABILITY_NAMED_IAM \ 
---parameter-overrides SourceEni=<Source_Eni_ID> TargetEni=<Target_Eni_ID> SourceVpcIpv4Cidr=<VPC_Cidr>
+--parameter-overrides SourceEniList=<Source_Eni_ID1, Source_Eni_ID2, Source_Eni_ID3...> TargetEni=<Target_Eni_ID> SourceVpcIpv4Cidr=<VPC_Cidr>
 ```
 
 ## Additional Features
