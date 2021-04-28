@@ -59,7 +59,7 @@ BucketSecretKey - Secret key for the bucket
 _Optional Parameters:_
 
 ```
-BucketS3Url - Bucket URL, e.g: https://storage.googleapis.com if you are using GCS
+BucketProvider - (s3 / gcs / azure)
 RotationSeconds - Number of seconds between file rotations 
 MaxFileSize - Maximum pcap file size in MBs
 SnifferVersion - Seekret Sniffer container version 
