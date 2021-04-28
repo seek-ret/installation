@@ -39,7 +39,7 @@ Also, the `Makefile` is optimized for deployments made on `us-east-1` region (bu
 
 ## Deployment
 
-![Deployment diagram](https://github.com/seek-ret/installation/tree/master/aws-traffic-mirroring/aws_mirroring.jpg)
+![Deployment diagram](https://github.com/seek-ret/installation/blob/befed5aaeda487597ff09c78ff935f2ffae8562b/aws-traffic-mirroring/aws_mirroring.jpg)
 
 ### Seekret Sniffer
 
