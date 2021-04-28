@@ -22,8 +22,8 @@ Parameters:
     Default: 2
   BucketProvider:
     Type: String
-    Description: Bucket provider (aws / gcs / azure)
-    Default: aws
+    Description: Bucket provider (s3 / gcs / azure)
+    Default: s3
   BucketName:
     Type: String
     Description: Bucket name
@@ -95,7 +95,6 @@ Resources:
                   STORAGE_PROVIDER=${BucketProvider}
                   BUCKET_NAME=${BucketName}
                   FOLDER_NAME=${BucketFolderName}
-                  BPF_FILTER=udp and port 4789
                   MAX_FILE_SIZE=${MaxFileSize}
                   ROTATION_SECONDS=${RotationSeconds}
                   INTERFACE=capture0
@@ -137,7 +136,7 @@ Resources:
 
             #setup traffic mirroring network interface
             eth=$(route | grep default | awk '{print $8}')
-            sudo ip link add capture0 type vxlan id 4058602 local 10.0.0.83 remote 10.0.0.84 dev $eth dstport 4789
+            sudo ip link add capture0 type vxlan id 12345 local 10.0.0.83 remote 10.0.0.84 dev $eth dstport 4789
             sudo ip link set capture0 up
             sudo sysctl net.ipv6.conf.capture0.disable_ipv6=1
 
