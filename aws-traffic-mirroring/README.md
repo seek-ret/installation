@@ -39,9 +39,11 @@ Also, the `Makefile` is optimized for deployments made on `us-east-1` region (bu
 
 ## Deployment
 
-### Target Instance
+![Deployment diagram](https://github.com/seek-ret/installation/tree/master/aws-traffic-mirroring/aws_mirroring.jpg)
 
-Deploy the target instance stack by running
+### Seekret Sniffer
+
+The target instance (EC2) that contains seekret sniffer running inside a docker.
 
 You'll need to provide parameter values for the next parameters
 
