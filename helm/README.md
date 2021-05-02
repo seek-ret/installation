@@ -22,7 +22,7 @@ Copyright 2019, Tumblr, Inc.
 
 #### HTTP traffic
 ```bash
- helm repo add seekret-repo 
+ helm repo add seekret-repo http://helm.seekret.com
  helm install seekret-sniffer seekret-repo/seekret --set bucket.provider={PROVIDER} --set bucket.accessKey={ACCESS_KEY} --set bucket.secretKey={SECRET_KEY} --set bucket.name={BUCKET_NAME} --set bpfFilter="tcp port [PORT_NUMBER]"
 ```
 
@@ -35,7 +35,7 @@ _The key is mounted by the proxy container and is used only to decrypt and re-en
 
 b. 
 ```bash
- helm repo add seekret-repo 
+ helm repo add seekret-repo http://helm.seekret.com
  helm install seekret-sniffer seekret-repo/seekret --set bucket.provider={PROVIDER} --set bucket.accessKey={ACCESS_KEY} --set bucket.secretKey={SECRET_KEY} --set bucket.name={BUCKET_NAME} --set tlsProxy.enabled=true --set tlsProxy.targetPort={PORT_NUMBER} 
 ```
 _Usually the tlsProxy.targetPort should be 443_
