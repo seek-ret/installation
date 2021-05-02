@@ -22,7 +22,7 @@ Copyright 2019, Tumblr, Inc.
 
 #### HTTP traffic
 ```bash
- helm repo add seekret-repo 
+ helm repo add seekret-repo http://helm.seekret.com
  helm install seekret-sniffer seekret-repo/seekret --set bucket.provider={PROVIDER} --set bucket.accessKey={ACCESS_KEY} --set bucket.secretKey={SECRET_KEY} --set bucket.name={BUCKET_NAME} --set bpfFilter="tcp port [PORT_NUMBER]"
 ```
 
