@@ -2,7 +2,7 @@ Seekret
 =======
 A Helm chart for Kubernetes
 
-Current chart version is `1.0.0`
+Current chart version is `1.0.1`
 
 ## License
 
