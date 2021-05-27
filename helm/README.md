@@ -29,7 +29,7 @@ Copyright 2019, Tumblr, Inc.
 #### HTTPS traffic
 a. Create a K8s secret with your private and public key in your application k8s environment:
 
-`kubectl create secret generic seekret-tls-proxy-certs --from-file=<your-public-key-cert.pem> --from-file=<your-private-key.pem> --namespace <namespace_of_API_gateway_pod>`
+`kubectl create secret tls seekret-tls-proxy-certs --cert=<your-public-key-cert.crt> --key=<your-private-key.key> --namespace <namespace_of_API_gateway_pod>`
    
 _The key is mounted by the proxy container and is used only to decrypt and re-encrypt the traffic._
 
