@@ -18,7 +18,14 @@ Copyright 2019, Tumblr, Inc.
 
 ## Deployment
 
-1. Deploy helm chart 
+### Deploy helm chart 
+
+---
+**NOTE**
+
+Currently, the deployment is not supported to a **custom** namespace. For a workaround please contact us.
+
+---
 
 #### HTTP traffic
 ```bash
@@ -40,8 +47,7 @@ b.
 ```
 _Usually the tlsProxy.targetPort should be 443_
 
-
-2. Add annotations to your k8s environment:
+### Add annotations to your k8s environment:
 
 `annotations: injector.seekret.com/request: sniffer`
 
@@ -65,7 +71,7 @@ spec:
         imagePullPolicy: Never
 ```
 
-## Additional Optional Values
+### Additional Optional Values
 
 Those values can be configured during installation using ``` --set [ParamName]=[VALUE] (e.g: --set bucket.folderName=test/capture) ```
 
