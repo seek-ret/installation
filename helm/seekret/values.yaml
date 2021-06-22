@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 name: seekret-sidecar-injector
-image: seekret/sniffer:2
+image: gcr.io/seekret/sniffer:2
 
 # Injector values
 injector:
@@ -31,7 +31,7 @@ maxFileSize: 50
 
 httpProxyClient:
   enabled: false
-  image: seekret/http-proxy-client:1
+  image: gcr.io/seekret/http-proxy-client:1
   target:
   pullIntervalInSeconds: 10
   gcs:
@@ -55,8 +55,8 @@ tlsProxy:
   adminPort: 9901
   targetAddress: localhost
   targetPort: 443
-  envoyImage: seekret/envoy-https-proxy:1
-  initImage: seekret/https-proxy-init:1
+  envoyImage: gcr.io/seekret/envoy-https-proxy:1
+  initImage: gcr.io/seekret/https-proxy-init:1
   requestCpu: "100m"
   requestMemory: "50Mi"
   limitCpu: "500m"
