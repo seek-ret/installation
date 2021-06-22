@@ -150,7 +150,7 @@ Resources:
             sudo systemctl enable docker
 
             # run sniffer container
-            docker run -d --net host --env-file /home/seekret-conf.env --log-driver json-file --log-opt max-size=10m --log-opt max-file=5 --restart unless-stopped seekret/sniffer:${SnifferVersion}
+            docker run -d --net host --env-file /home/seekret-conf.env --log-driver json-file --log-opt max-size=10m --log-opt max-file=5 --restart unless-stopped gcr.io/seekret/sniffer:${SnifferVersion}
 
   Instance:
     Type: "AWS::EC2::Instance"
