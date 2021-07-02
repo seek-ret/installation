@@ -35,17 +35,17 @@ The setup in this repository has the following requirements:
 
 * AWS CLI with admin-level credentials (needs to be able to deploy IAM roles).
 
-Also, the `Makefile` is optimized for deployments made on `us-east-1` region (but should work with other regions as well).
-
 ## Deployment
 
 ![Deployment diagram](https://github.com/seek-ret/installation/blob/befed5aaeda487597ff09c78ff935f2ffae8562b/aws-traffic-mirroring/aws_mirroring.jpg)
 
 ### Seekret Sniffer
 
-The target instance (EC2) that contains seekret sniffer running inside a docker.
+The target instance (EC2) that contains Seekret sniffer running inside a docker.
 
-You'll need to provide parameter values for the next parameters
+You'll need to provide parameter values for the next parameters 
+
+(Change directly in `vpc-mirroring-target-instance.yaml` or via `--parameter-overrides` in cmd line)
 
 _Required Parameters:_
 
@@ -134,6 +134,22 @@ Execute the following commands to clean up AWS resources:
 aws cloudformation delete-stack --stack-name seekret-vpc-mirroring
 aws cloudformation delete-stack --stack-name seekret-sniffer
 ```
+
+## Potential pitfalls
+
+1. Make sure there aren't any existing stacks with the same name from previous deployment attempts (even those in `pending deleting` state)
+
+2. Seekret Sniffer ENI is dynamically created during the `vpc-mirroring-target-instance.yaml` deployment, hence the ENI id will changed after each deployment.
+   Make sure you pass the right ENI id as TargetEni. when deploying the `vpc-mirroring.yaml`
+   
+   (Otherwise you will get: `"ResourceStatusReason": "The interface ID 'eni-xxxxxxxxxxxxx' does not exist (Service: AmazonEC2; Status Code: 400; Error Code: InvalidTrafficMirrorTarget`)
+
+3. If the ALB runs on the unsupported hardware, you will receive:
+   `"ResourceStatusReason": "eni-0cb3e696ef2152e0f must be attached to a supported instance (Service: AmazonEC2; Status Code: 400; Error Code: NetworkInterfaceNotSupported;`
+
+   In that case contact AWS via your support tier and ask them to upgrade your ALB to a nitro hardware to support traffic mirroring
+   
+   _Note:_ If the source machine isn't ALB, you can change the machine type by yourself.
 
 ## Sources, References & Additional Material
 
