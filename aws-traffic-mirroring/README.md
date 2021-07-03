@@ -26,7 +26,7 @@ Amazon VPC Traffic Mirroring allows you to mirror network traffic from an Elasti
 
 The repository contains the following components (or CloudFormation stacks):
 
-* `vpc-mirroring-target-instance` - EC2 instance with Seekret's sniffer.
+* `seekret-sniffer` - EC2 instance with Seekret's sniffer.
 * `vpc-mirroring` - Amazon VPC Traffic Mirroring configuration.
 
 ## Prerequisites
@@ -45,7 +45,7 @@ The target instance (EC2) that contains Seekret sniffer running inside a docker.
 
 You'll need to provide parameter values for the next parameters 
 
-(Change directly in `vpc-mirroring-target-instance.yaml` or via `--parameter-overrides` in cmd line)
+(Change directly in `seekret-sniffer.yaml` or via `--parameter-overrides` in cmd line)
 
 _Required Parameters:_
 
@@ -71,7 +71,7 @@ If you use a different profile than `default` or a different region than `us-eas
 
 ```bash
 aws --profile default --region us-east-1 cloudformation deploy --stack-name seekret-sniffer \ 
---tags Deployment=seekret-target-sniffer --template-file templates/vpc-mirroring-target-instance.yaml --capabilities CAPABILITY_NAMED_IAM \ 
+--tags Deployment=seekret-target-sniffer --template-file templates/seekret-sniffer.yaml --capabilities CAPABILITY_NAMED_IAM \ 
 --parameter-overrides CustomerVpcId=<VPC_ID> SourceVpcIpv4Cidr=<VPC_Cidr> CustomerSubnetId=<Subnet_ID>
 ```
 
@@ -139,7 +139,7 @@ aws cloudformation delete-stack --stack-name seekret-sniffer
 
 1. Make sure there aren't any existing stacks with the same name from previous deployment attempts (even those in `pending deleting` state)
 
-2. Seekret Sniffer ENI is dynamically created during the `vpc-mirroring-target-instance.yaml` deployment, hence the ENI id will changed after each deployment.
+2. Seekret Sniffer ENI is dynamically created during the `seekret-sniffer.yaml` deployment, hence the ENI id will changed after each deployment.
    Make sure you pass the right ENI id as TargetEni. when deploying the `vpc-mirroring.yaml`
    
    (Otherwise you will get: `"ResourceStatusReason": "The interface ID 'eni-xxxxxxxxxxxxx' does not exist (Service: AmazonEC2; Status Code: 400; Error Code: InvalidTrafficMirrorTarget`)
