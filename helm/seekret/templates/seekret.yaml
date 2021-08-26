@@ -289,6 +289,8 @@ data:
         value: {{ .Values.tlsProxy.targetAddress }}
       - name: ENVOY_TARGET_PORT
         value: {{ .Values.tlsProxy.targetPort }}
+      - name: ENVOY_REQUEST_TIMEOUT
+        value: {{ .Values.tlsProxy.requestTimeout }}
       ports:
       - containerPort: 9443
       - containerPort: 9080
