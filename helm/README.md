@@ -2,7 +2,7 @@ Seekret
 =======
 A Helm chart for Kubernetes
 
-Current chart version is `1.0.1`
+Current chart version is `1.0.2`
 
 ## License
 
@@ -106,3 +106,4 @@ Those values can be configured during installation using ``` --set [ParamName]=[
 | tlsProxy.initImage | string | `"gcr.io/seekret/https-proxy-init:1"` | Image to use for the init container |
 | tlsProxy.targetAddress | string | `"localhost"` | Target address of the TLS proxy |
 | tlsProxy.targetPort | int | `443` | Target port of the TLS proxy |
+| tlsProxy.requestTimeout | string | `15s` | The timeout for a single request |

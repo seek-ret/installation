@@ -61,6 +61,7 @@ tlsProxy:
   requestMemory: "50Mi"
   limitCpu: "500m"
   limitMemory: "256Mi"
+  requestTimeout: "15s"
 
 networkPolicy:
   enabled: false
