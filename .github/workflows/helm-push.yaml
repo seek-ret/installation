@@ -29,5 +29,5 @@ jobs:
 
       - name: push
         run: |
-          helm repo add seekret-repo https://helm.seekret.com
+          helm repo add seekret-repo https://helm.seekret.io
           helm push helm/seekret seekret-repo -u ${{ secrets.HELM_REPO_USER }} -p ${{ secrets.HELM_REPO_PASSWORD }}

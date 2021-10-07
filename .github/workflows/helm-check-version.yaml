@@ -24,7 +24,7 @@ jobs:
 
       - name: check version
         run: |
-          helm repo add seekret-repo https://helm.seekret.com
+          helm repo add seekret-repo https://helm.seekret.io
           helm repo update
           current_helm_version=$(helm show chart ./helm/seekret | awk NF | tail -1 | awk '{print $2}')
           newer_versions=$(helm search repo seekret-repo/seekret --version "^${current_helm_version}" | tail -n+2 | awk '{print $2}')
