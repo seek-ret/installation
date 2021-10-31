@@ -8,17 +8,24 @@ An AWS elastic beanstalk deployment options.
 - Docker based beanstalk deployment.
 - ACCESS_KEY, SECRET_KEY and BUCKET_NAME (supported buckets: GCS / S3 / Azure Blob)
 
+## Notes
+
+- Currently, **not** supported on multi-container option
+- That deployment should be done for each target container you want to capture its traffic.
+- We do recommend adding the setup to be part of the `eb deploy` procedure of your CD automation.
+
 ## Deployment
 
 ### Add elastic beanstalk hook files
 
 Seekret is using hook files to deploy our sniffer on your machine.
 1. [.ebextensions/options.config](options.config)
-   1. installs docker
-   2. pull seekret [sniffer script](https://raw.githubusercontent.com/seek-ret/installation/master/aws-elastic-beanstalk/run.sh)
-   3. assign run permissions to the sniffer script
+   1. Installs docker
+      1. This step is optional and will be done if and only if docker does not exist on the machine (according to the section `Specifying versions` [here](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/customize-containers-ec2.html#linux-packages))
+   2. Pulls seekret's [sniffer script](https://raw.githubusercontent.com/seek-ret/installation/master/aws-elastic-beanstalk/run.sh)
+   3. Assigns run permissions to the sniffer script
 2. [.platform/hooks/postdeploy/001_run_seekret_sniffer.sh](001_run_seekret_sniffer.sh)
-   1. Run in non-blocking mode our sniffer
+   1. Runs our sniffer in non-blocking-mode
    
 Add the files to your source code or to your zip file of the deployment in the marked locations.
 
