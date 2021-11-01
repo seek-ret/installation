@@ -40,4 +40,5 @@ Add the files to your source code or to your zip file of the deployment in the m
       5. FOLDER_NAME - Set to `default`.
       6. BPF_FILTER - Set the filter for the traffic.
      
-![elastic-beanstalk](https://user-images.githubusercontent.com/17148247/139635125-89aecbdf-f913-47b1-b187-ec6abffbd47b.png)
+![elastic-beanstalk](https://user-images.githubusercontent.com/17148247/139697438-20c6d424-8972-4827-975a-37e42cec6532.png)
+
