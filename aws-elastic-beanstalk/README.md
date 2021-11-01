@@ -39,3 +39,6 @@ Add the files to your source code or to your zip file of the deployment in the m
       4. STORAGE_PROVIDER - Choose one of the following `gcs` or `aws` or `azure`.
       5. FOLDER_NAME - Set to `default`.
       6. BPF_FILTER - Set the filter for the traffic.
+      7. 
+![elastic-beanstalk](https://user-images.githubusercontent.com/17148247/139634560-c4cb8d1d-a903-457d-bad3-9197b7b80ed7.png)
+
