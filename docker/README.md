@@ -28,5 +28,5 @@ _Bucket access parameters: (**or** use an IAM role **instead** - with AWS S3 buc
 
 _Replace **<container_name>** with the actual name of the target container_
 
-Run : `docker run -d --rm --net container:<container_name> --env-file ./conf.env  --log-driver json-file --log-opt max-size=10m --log-opt max-file=5 gcr.io/seekret/sniffer:1` 
+Run : `docker run -d --rm --net container:<container_name> --env-file ./conf.env  --log-driver json-file --log-opt max-size=10m --log-opt max-file=5 gcr.io/seekret/sniffer:2` 
 
