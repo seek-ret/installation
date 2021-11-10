@@ -19,7 +19,7 @@ injector:
 bucket:
   provider: gcs
   name:
-  folderName: default/captures
+  workspace: default
   accessKey:
   secretKey:
 

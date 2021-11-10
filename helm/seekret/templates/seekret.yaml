@@ -226,8 +226,8 @@ data:
         value: {{ .Values.bucket.provider | quote }}
       - name: BUCKET_NAME
         value: {{required "A target bucket name is required!" .Values.bucket.name }}
-      - name: FOLDER_NAME
-        value: {{ .Values.bucket.folderName }}
+      - name: WORKSPACE
+        value: {{ .Values.bucket.workspace }}
       - name: ACCESS_KEY
         value: {{required "An access key ID is required with keyAuth authentication!" .Values.bucket.accessKey }}
       - name: SECRET_ACCESS_KEY
