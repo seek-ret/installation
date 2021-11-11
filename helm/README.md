@@ -73,7 +73,7 @@ spec:
 
 ### Additional Optional Values
 
-Those values can be configured during installation using ``` --set [ParamName]=[VALUE] (e.g: --set bucket.folderName=test/capture) ```
+Those values can be configured during installation using ``` --set [ParamName]=[VALUE] (e.g: --set bucket.workspace=test) ```
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
@@ -85,7 +85,7 @@ Those values can be configured during installation using ``` --set [ParamName]=[
 | bpfFilter | string | `"tcp and not tcp port 443"` | The bpf filter for the sniffer |
 | networkPolicy.enabled | bool | `false` | Whether to add a network policy |
 | bucket.name | string | `` | Bucket name for pcaps |
-| bucket.folderName | string | `"default/captures"` | Folder for pcaps inside bucket |
+| bucket.workspace | string | `"default"` | The workspace in the Seekret app to send requests too. Must be an existing workspace |
 | bucket.keyAuth | bool | `true` | if true, using HMAC key authentication, otherwise AWS role-based IAM access assumed |
 | bucket.accessKey | string | `` | Access key for sniffer |
 | bucket.secretKey | string | `` | Secret key for sniffer |
