@@ -10,7 +10,7 @@ The machine must be configured to have an IAM Role access or provide ACCESS_KEY 
 
 Edit the minio.env with the following values:
 
-_Bucket access parameters: (**or** use an IAM role **instead** - with AWS S3 buckets only)_ 
+_Bucket access parameters:
 - ACCESS_KEY            - HMAC key for target bucket
 - SECRET_ACCESS_KEY     - secret key for target bucket
 - STORAGE_PROVIDER      - one of `gcs`, `s3`, `azure`
