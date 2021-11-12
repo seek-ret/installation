@@ -33,10 +33,10 @@ Parameters:
   BucketSecretKey:
     Type: String
     Description: Secret key for the bucket
-  BucketFolderName:
+  Workspace:
     Type: String
-    Description: Folder name to store the pcaps in the bucket
-    Default: default/captures
+    Description: The workspace in Seekret app to send requests too. Must be an existing workspace.
+    Default: default
   RotationSeconds:
     Type: Number
     Description: Interval to rotate files in the sniffer
@@ -94,7 +94,7 @@ Resources:
                   SECRET_ACCESS_KEY=${BucketSecretKey}
                   STORAGE_PROVIDER=${BucketProvider}
                   BUCKET_NAME=${BucketName}
-                  FOLDER_NAME=${BucketFolderName}
+                  WORKSPACE=${Workspace}
                   MAX_FILE_SIZE=${MaxFileSize}
                   ROTATION_SECONDS=${RotationSeconds}
                   INTERFACE=capture0
