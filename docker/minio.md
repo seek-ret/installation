@@ -27,5 +27,4 @@ _Bucket access parameters:
 
 _Replace **<container_name>** with the actual name of the target container_
 
-Run : `docker run -d --rm --net container:<container_name> --env-file ./minio.env  --log-driver json-file --log-opt max-size=10m --log-opt max-file=5 gcr.io/seekret/sniffer:2` 
-
+Run : `./run.sh <container_name> ./minio.env
