@@ -8,7 +8,7 @@ SNIFFER_CONTAINER="gcr.io/seekret/sniffer:2"
 
 function get_image_for_container {
     container=$1
-    image=$(docker ps | grep ${container} | stdbuf -o0 awk -F " " '{print $2}')
+    image=$(docker ps | grep ${container} | stdbuf -o0 awk -F " " '{print $2}' | awk -F ":" '{print $1}')
     echo ${image}
 }
 
@@ -32,7 +32,7 @@ DOCKER_IMAGE="$(get_image_for_container ${TARGET_CONTAINER})"
 docker run -d --rm \
     --net container:${TARGET_CONTAINER} \
     --env-file ${ENV_FILE} \
-    -e "PREFIX=${DOCKER_IMAGE}" \
+    -e "PREFIX=service-${DOCKER_IMAGE}_" \
     --log-driver json-file \
     --log-opt max-size=10m \
     --log-opt max-file=5 \
