@@ -21,7 +21,8 @@ _Bucket access parameters:
 - ROTATION_SECONDS (_optional_)     - time interval to rotate pcap files by the sniffer
 - MAX_FILE_SIZE (_optional_)        - max size of the single pcap file 
 - DUMP_DIR (_optional_)              - local directory to temporary store pcap files
-- PREFIX (_optional_)                - prefix string to pcap file names  
+- PREFIX (_optional_)                - prefix string to pcap file names
+- SERVICE_NAME (_optional_)         - the name of the service being sniffed
 
 ## Run
 
