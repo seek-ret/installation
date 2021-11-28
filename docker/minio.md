@@ -20,8 +20,8 @@ _Bucket access parameters:
 - BPF_FILTER (_optional_)           - port number and protocol type you want to sniff (e.g: tcp port 80)
 - ROTATION_SECONDS (_optional_)     - time interval to rotate pcap files by the sniffer
 - MAX_FILE_SIZE (_optional_)        - max size of the single pcap file 
-- DUMP_DIR (_optional_)              - local directory to temporary store pcap files
-- PREFIX (_optional_)                - prefix string to pcap file names
+- DUMP_DIR (_optional_)             - local directory to temporary store pcap files
+- PREFIX (_optional_)               - prefix string to pcap file names
 - SERVICE_NAME (_optional_)         - the name of the service being sniffed
 
 ## Run
