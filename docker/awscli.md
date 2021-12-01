@@ -20,7 +20,7 @@ _Bucket access parameters: (**or** use an IAM role **instead** - with AWS S3 buc
 - MAX_FILE_SIZE (_optional_)        - max size of the single pcap file 
 - DUMP_DIR (_optional_)             - local directory to temporary store pcap files
 - PREFIX (_optional_)               - prefix string to pcap file names  
-- SERVICE_NAME (_optional_)         - the name of the service being sniffed
+- SERVICE_NAME (_optional_)         - The service name to which the traffic belongs
 
 ## Run
 
