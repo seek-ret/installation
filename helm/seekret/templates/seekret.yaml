@@ -237,6 +237,11 @@ data:
           fieldRef:
             apiVersion: v1
             fieldPath: metadata.name
+      - name: SERVICE_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: metadata.labels['app']
       - name: ROTATION_SECONDS
         value: {{ .Values.rotationSeconds }}
     {{ if .Values.tlsProxy.enabled }}
