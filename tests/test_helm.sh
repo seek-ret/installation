@@ -4,7 +4,7 @@ CURRENT_DIR=$(dirname $(realpath $0))
 SEEKRET_IS_RUNNING=0
 TEST_ENV_IS_RUNNING=0
 NAMESPACE=${NAMESPACE:-"cdtests"}
-SERVICE_NAME=${NAMESPACE:-"hello"}
+SERVICE_NAME=hello
 
 cleanup() {
   if [ $TEST_ENV_IS_RUNNING -eq 1 ]; then
