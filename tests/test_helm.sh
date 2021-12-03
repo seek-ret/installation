@@ -4,6 +4,7 @@ CURRENT_DIR=$(dirname $(realpath $0))
 SEEKRET_IS_RUNNING=0
 TEST_ENV_IS_RUNNING=0
 NAMESPACE=${NAMESPACE:-"cdtests"}
+SERVICE_NAME=${NAMESPACE:-"hello"}
 
 cleanup() {
   if [ $TEST_ENV_IS_RUNNING -eq 1 ]; then
@@ -71,7 +72,6 @@ cleanupOnError $?
 run kubectl wait --for=condition=available --timeout=60s deployment/hello-node -n $NAMESPACE
 cleanupOnError $?
 POD=$(kubectl get pods -l app=hello -o custom-columns=:metadata.name -n $NAMESPACE | awk NF)
-SERVICE_NAME=hello
 run kubectl wait --for=condition=Ready pod/"$POD" -n $NAMESPACE
 cleanupOnError $?
 TEST_ENV_IS_RUNNING=1
@@ -83,7 +83,7 @@ run kubectl get all -n $NAMESPACE
 
 timeout=60
 while test $timeout -gt 0; do
-  run gsutil ls gs://$BUCKET_NAME/logs/$SERVICE_NAME/"$POD"_ack.txt
+  run gsutil ls gs://$BUCKET_NAME/logs/unknown-service/"$POD"_ack.txt
   res=$?
   if [ $res -eq 0 ]; then
     break
