@@ -4,7 +4,9 @@ Docker deployment
 Sniffer docker will passively sniff target container traffic and move the pcaps to the remote bucket.
 Supported buckets: S3, GCS and Azure blob storage.
 
-You must provide ACCESS_KEY and SECRET_KEY for the bucket (with write, read and delete permissions) via the configuration to the docker.  
+## Self-hosted Bucket Setup
+
+You must provide ACCESS_KEY and SECRET_ACCESS_KEY for the bucket (with write, read and delete permissions) via the configuration to the docker.
 
 ## Installation
 
