@@ -29,20 +29,6 @@ bpfFilter: "tcp and not tcp port 443"
 maxFileSize: 50
 serviceMarkerLabel: "app"
 
-httpProxyClient:
-  enabled: false
-  image: gcr.io/seekret/http-proxy-client:1
-  target:
-  pullIntervalInSeconds: 10
-  gcs:
-    projectName:
-    bucketName:
-    credsFile: "/seekret/gcscreds.json"
-
-gcsCredentials:
-  name: seekret-gcscreds
-  creds:
-
 sniffer:
   requestCpu: "100m"
   requestMemory: "100Mi"

@@ -2,7 +2,7 @@ Seekret
 =======
 A Helm chart for Kubernetes
 
-Current chart version is `1.0.3`
+Current chart version is `1.0.4`
 
 ## License
 
@@ -75,6 +75,11 @@ spec:
 
 Those values can be configured during installation using ``` --set [ParamName]=[VALUE] (e.g: --set bucket.workspace=test) ```
 
+#### Honorable mentions
+
+- Adjust maxFileSize and rotationSeconds parameters if you deploy in an environment with a heavy traffic
+- By default, underlying service name is extracted from pod's description via its `app` label. You can use a different label by changing the value of `serviceMarkerLabel` parameter 
+
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | name | string | `"seekret-sidecar-injector"` | App name |
@@ -90,15 +95,6 @@ Those values can be configured during installation using ``` --set [ParamName]=[
 | bucket.accessKey | string | `` | Access key for sniffer |
 | bucket.secretKey | string | `` | Secret key for sniffer |
 | bucket.provider | string | `gcs` | one of `gcs`, `s3`, `azure` |
-| httpProxyClient.enabled | bool | `false` | Whether to deploy Seekret's HTTP Proxy |
-| httpProxyClient.image | string | `"gcr.io/seekret/http-proxy-client:1"` | Docker image of the HTTP Proxy client |
-| httpProxyClient.target | string | `nil` | Target URL for the proxy. The value must include a schema ("http://") |
-| httpProxyClient.pullIntervalInSeconds | float | `10` | Seconds between each requests batch |
-| httpProxyClient.gcs.projectName | string | `nil` | Name of the GCP project where the requests are stored |
-| httpProxyClient.gcs.bucketName | string | `nil` | Name of the GCS bucket where the requests are stored |
-| httpProxyClient.credsFile | string | `"/seekret/gcscreds.json"` | Path in which to store the GCS credentials file |
-| gcsCredentials.name | string | `"seekret-gcscreds"` | Name of the secret with the GCS credentials |
-| gcsCredentials.creds | string | `nil` | The content of the GCS credentials file |
 | tlsProxy.enabled | bool | `false` | Whether the TLS proxy is enabled on the target pod |
 | tlsProxy.adminPort | int | `9901` | The port for Envoy's admin interface |
 | tlsProxy.certsSecretName | string | `"seekret-tls-proxy-certs"` | Name of the secret value with the certificates |
