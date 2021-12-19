@@ -241,7 +241,7 @@ data:
         valueFrom:
           fieldRef:
             apiVersion: v1
-            fieldPath: metadata.labels['app']
+            fieldPath: metadata.labels[.Values.serviceMarkerLabel]
       - name: ROTATION_SECONDS
         value: {{ .Values.rotationSeconds }}
     {{ if .Values.tlsProxy.enabled }}
