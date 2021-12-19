@@ -24,9 +24,9 @@ bucket:
   secretKey:
 
 
-rotationSeconds: 600
+rotationSeconds: 60
 bpfFilter: "tcp and not tcp port 443"
-maxFileSize: 50
+maxFileSize: 10
 serviceMarkerLabel: app
 
 sniffer:
