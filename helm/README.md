@@ -87,7 +87,6 @@ Those values can be configured during installation using ``` --set [ParamName]=[
 | networkPolicy.enabled | bool | `false` | Whether to add a network policy |
 | bucket.name | string | `` | Bucket name for pcaps |
 | bucket.workspace | string | `"default"` | The workspace in the Seekret app to send requests too. Must be an existing workspace |
-| bucket.keyAuth | bool | `true` | if true, using HMAC key authentication, otherwise AWS role-based IAM access assumed |
 | bucket.accessKey | string | `` | Access key for sniffer |
 | bucket.secretKey | string | `` | Secret key for sniffer |
 | bucket.provider | string | `gcs` | one of `gcs`, `s3`, `azure` |
