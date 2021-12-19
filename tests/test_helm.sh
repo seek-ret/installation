@@ -4,6 +4,7 @@ CURRENT_DIR=$(dirname $(realpath $0))
 SEEKRET_IS_RUNNING=0
 TEST_ENV_IS_RUNNING=0
 NAMESPACE=${NAMESPACE:-"cdtests"}
+SERVICE_NAME=hello
 
 cleanup() {
   if [ $TEST_ENV_IS_RUNNING -eq 1 ]; then
@@ -82,7 +83,7 @@ run kubectl get all -n $NAMESPACE
 
 timeout=60
 while test $timeout -gt 0; do
-  run gsutil ls gs://$BUCKET_NAME/logs/unknown-service/"$POD"_ack.txt
+  run gsutil ls gs://$BUCKET_NAME/logs/$SERVICE_NAME/"$POD"_ack.txt
   res=$?
   if [ $res -eq 0 ]; then
     break

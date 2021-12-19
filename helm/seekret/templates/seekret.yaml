@@ -237,6 +237,13 @@ data:
           fieldRef:
             apiVersion: v1
             fieldPath: metadata.name
+    {{ if .Values.serviceMarkerLabel }}
+      - name: SERVICE_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: metadata.labels['{{ .Values.serviceMarkerLabel}}']
+    {{ end }}
       - name: ROTATION_SECONDS
         value: {{ .Values.rotationSeconds }}
     {{ if .Values.tlsProxy.enabled }}
