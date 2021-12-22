@@ -31,7 +31,7 @@ Currently, the deployment is not supported to a **custom** namespace. For a work
 ```bash
  helm repo add seekret-repo https://helm.seekret.io
  helm repo update
- helm install seekret-sniffer seekret-repo/seekret --set bucket.provider={PROVIDER} --set bucket.accessKey={ACCESS_KEY} --set bucket.secretKey={SECRET_KEY} --set bucket.name={BUCKET_NAME} --set bpfFilter="tcp port [PORT_NUMBER]" --set bucket.workspace={WORKSPACE}
+ helm upgrade -i seekret-sniffer seekret-repo/seekret --set bucket.provider={PROVIDER} --set bucket.accessKey={ACCESS_KEY} --set bucket.secretKey={SECRET_KEY} --set bucket.name={BUCKET_NAME} --set bpfFilter="tcp port [PORT_NUMBER]" --set bucket.workspace={WORKSPACE}
 ```
 
 #### HTTPS traffic
