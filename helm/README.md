@@ -30,7 +30,8 @@ Currently, the deployment is not supported to a **custom** namespace. For a work
 #### HTTP traffic
 ```bash
  helm repo add seekret-repo https://helm.seekret.io
- helm install seekret-sniffer seekret-repo/seekret --set bucket.provider={PROVIDER} --set bucket.accessKey={ACCESS_KEY} --set bucket.secretKey={SECRET_KEY} --set bucket.name={BUCKET_NAME} --set bpfFilter="tcp port [PORT_NUMBER]"
+ helm repo update
+ helm install seekret-sniffer seekret-repo/seekret --set bucket.provider={PROVIDER} --set bucket.accessKey={ACCESS_KEY} --set bucket.secretKey={SECRET_KEY} --set bucket.name={BUCKET_NAME} --set bpfFilter="tcp port [PORT_NUMBER]" --set bucket.workspace={WORKSPACE}
 ```
 
 #### HTTPS traffic
@@ -43,7 +44,8 @@ _The key is mounted by the proxy container and is used only to decrypt and re-en
 b. 
 ```bash
  helm repo add seekret-repo https://helm.seekret.io
- helm install seekret-sniffer seekret-repo/seekret --set bucket.provider={PROVIDER} --set bucket.accessKey={ACCESS_KEY} --set bucket.secretKey={SECRET_KEY} --set bucket.name={BUCKET_NAME} --set tlsProxy.enabled=true --set tlsProxy.targetPort={PORT_NUMBER} 
+ helm repo update
+ helm install seekret-sniffer seekret-repo/seekret --set bucket.provider={PROVIDER} --set bucket.accessKey={ACCESS_KEY} --set bucket.secretKey={SECRET_KEY} --set bucket.name={BUCKET_NAME} --set tlsProxy.enabled=true --set tlsProxy.targetPort={PORT_NUMBER} --set bucket.workspace={WORKSPACE}
 ```
 _Usually the tlsProxy.targetPort should be 443_
 
